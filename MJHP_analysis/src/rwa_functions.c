@@ -143,7 +143,6 @@ void print_mjhp2theta_energy(char filename[200], TwoTheta *TTH, EnergyStep * EST
       fprintf(f2th, "%d\t%e\n", dE, ECON->rflc_total[dE][n]);
       reflection_total += ECON->rflc_total[dE][n];
     }
-      printf("Total Potential Energy for nrflc# %d = %e\n", n, reflection_total);
   }
 
   /*free energy contribution*/
