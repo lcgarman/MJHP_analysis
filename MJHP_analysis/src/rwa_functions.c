@@ -52,7 +52,7 @@ void read_mjin_header(char filename[100], MottJonesConditions * MJC, FileCabinet
   fclose(mjin_file);
 } //END of readSS 
 
-void print_mjhpHKL_energy(char filename[200], VectorIndices *VECT, EnergyStep * ESTP, UnitCell* UC, FileCabinet *FCAB, EnergyContribution * ECON)
+void print_mjhpHKL_energy(char filename[200], VectorIndices *VECT, EnergyStep *ESTP, UnitCell *UC, FileCabinet *FCAB, EnergyContribution *ECON)
 {
   FILE* fhkl;
   int nEstep;
