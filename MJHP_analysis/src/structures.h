@@ -131,7 +131,11 @@ typedef struct {
 
 typedef struct {
   char lattice[10];
-  int jzH, jzK, jzL;
+  int ndts;
+  int* jzH;
+  int* jzK;
+  int* jzL;
+  int nH, nK, nL;
   int ngrid;
   double delta;
   int njzk;

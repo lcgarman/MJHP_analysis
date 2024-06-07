@@ -102,7 +102,7 @@ void read_binary_abinit(FILE * flog, char filename[200], int option, UnitCell* U
   double occv;
   double cgv;
 
-  printf("\nReading %s\n", filename);
+  printf("\tReading %s\n", filename);
   fprintf(flog, "\nReading %s\n", filename);
   /*Open Abinit _o_* output file*/
   fab=fopen(filename,"rb+"); /*open the binary file in read and write mode*/

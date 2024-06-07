@@ -27,7 +27,7 @@ void FFTon_RealGrid(FILE * flog, BinaryGrid* BIN, NumberGrid* GRD, UnitCell* UC)
   double re_rec_grid;
   double im_rec_grid;
 
-  printf("\nFFT from Direct Space to Reciprocal Space\n");
+  printf("\tFFT from Direct Space to Reciprocal Space\n");
   fprintf(flog, "\nFFT from Direct Space to Reciprocal Space\n");
   ngfftx = GRD->ngfftx;
   ngffty = GRD->ngffty;

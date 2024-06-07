@@ -82,6 +82,9 @@ void Initialize_VectorIndices(VectorIndices * VECT)
 
 void Initialize_MottJonesConditions(MottJonesConditions * MJC)
 {
+  MJC->jzH = NULL;
+  MJC->jzK = NULL;
+  MJC->jzL = NULL;
   MJC->JZkpt = NULL;
   MJC->JZk_sym = NULL;
   MJC->JZmult = NULL;
@@ -306,6 +309,7 @@ double* AllocateMemory_oneD_double(double *array, int dim1)
   /*if array is already allocated leave this function*/
   if (array != NULL) {
     return array;
+printf("NOT NULL\n");
   }
 
   /*allocate 1D array to pointer*/
@@ -606,6 +610,7 @@ double* FreeMemory_oneD_double(double *array)
   }
 
   free(array);
+  array = NULL;
   return array;
 }
 

@@ -96,7 +96,7 @@ void mjhpHKL_density(FILE * flog, NumberGrid *GRD, BinaryGrid *BIN, Wavefunction
   }
   /*End of memory allocation*/
   
-  printf("\nCalculating Electron Density\n");
+  printf("Calculating Electron Density\n");
   fprintf(flog, "\nCalculating Electron Density\n");
   /*Begin Calculating Electron density from HKL*/
   for (kptno=0;kptno<nkpt;kptno++) { 

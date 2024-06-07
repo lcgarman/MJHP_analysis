@@ -69,13 +69,10 @@ void mjhpHKL_local_potential(FILE * flog, VectorIndices *VECT, NumberGrid *GRD, 
   sigma = SIGMA;
   Emesh = EMESH;
   total_local = 0.0;
-double min_broad, max_broad;
-min_broad = 1.0;
-max_broad = 0.0;
  
   /*Allocate memory for variables in this function*/
   ECON->local = AllocateMemory_oneD_double(ECON->local, nEstep);
-  
+
   fprintf(flog, "\nCalculating Local Potential Energy:\n");
   printf("Calculating Local Potential Energy\n");
   /*NOW start Calculating Potential Energy contribution for each kpt*/
@@ -148,8 +145,6 @@ max_broad = 0.0;
         mag_diff = mag_pw1 - mag_pw2;
         exponent = -(mag_diff*mag_diff)/sigma;
         broad = exp(exponent);
-//if (broad>max_broad) max_broad = broad;
-//if (broad<min_broad) min_broad = broad;
         fprintf(flog, "\t\tbroadening = %lf\n", broad);
 
 		/*loop over bands to find wavefunction coeff and dE*/
@@ -190,10 +185,5 @@ max_broad = 0.0;
   printf("\tTotal Potential Energy = %lf\n", total_local);
   fprintf(flog, "Total Potential Energy = %lf\n", total_local);
 
-  /*free allocated variables*/
-  BIN->rec_grid = FreeMemory_threeD_complex(BIN->rec_grid, ngfftx, ngffty);
-  BIN->cc_rec_grid= FreeMemory_threeD_complex(BIN->cc_rec_grid, ngfftx, ngffty);
-
-printf("BROAD: min = %lf\t max = %lf\n", min_broad, max_broad);
 
 }   //END of mjhp_hkl_localpot function

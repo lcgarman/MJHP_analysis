@@ -15,6 +15,8 @@ void read_mjin_header(char filename[100], MottJonesConditions * MJC, FileCabinet
   char MJOUTfilename[100];
   char lattice[10];
   double vec; 
+  int n;
+  int ndts;
   int jzH, jzK, jzL;
   double scanE_min, scanE_mid, scanE_max;
 
@@ -36,13 +38,24 @@ void read_mjin_header(char filename[100], MottJonesConditions * MJC, FileCabinet
   strcpy(MJC->lattice, lattice);
 
   fscanf(mjin_file, "%s", strv);
-  fscanf(mjin_file, "%d", &jzH);
-  fscanf(mjin_file, "%d", &jzK);
-  fscanf(mjin_file, "%d", &jzL);
-  MJC->jzH = jzH;
-  MJC->jzK = jzK;
-  MJC->jzL = jzL;
-
+  fscanf(mjin_file, "%d", &ndts);
+  MJC->ndts = ndts;
+  
+  /*allocate memory for HKL indices*/
+  MJC->jzH = AllocateMemory_oneD_int(MJC->jzH, ndts);
+  MJC->jzK = AllocateMemory_oneD_int(MJC->jzK, ndts);
+  MJC->jzL = AllocateMemory_oneD_int(MJC->jzL, ndts);
+ 
+  fscanf(mjin_file, "%s", strv);
+  for (n=0;n<ndts;n++) {
+	fscanf(mjin_file, "%d", &jzH);
+	fscanf(mjin_file, "%d", &jzK);
+	fscanf(mjin_file, "%d", &jzL);
+	MJC->jzH[n] = jzH;
+	MJC->jzK[n] = jzK;
+	MJC->jzL[n] = jzL;
+  }
+	
   fscanf(mjin_file, "%s", strv);
   fscanf(mjin_file, "%lf", &scanE_min);
   fscanf(mjin_file, "%lf", &scanE_mid);
@@ -172,7 +185,7 @@ void print_XSF(char filename[200], UnitCell* UC, NumberGrid* GRD, BinaryGrid* BI
   Ycart = NULL;
   Zcart = NULL;
 
-  printf("\nPrinting MJHP Density to: %s\n", filename);
+  printf("Printing MJHP Density to: %s\n", filename);
   fxsf=fopen(filename, "w");
   if (fxsf==NULL) {
     printf("ERROR: %s not found\n", filename);

@@ -24,6 +24,7 @@ int main(int argc, char * argv[])
   /*declaring filenames*/
   FILE* flog;
   char MJINfilename [200];
+  char MJOUTfilename_N [200];
   char MJOUTfilename [200];
   char MJLOGfilename [200];
   char ABOfilename [200];
@@ -33,7 +34,10 @@ int main(int argc, char * argv[])
   char H_append [10];
   char K_append [10];
   char L_append [10];
+  char ndts_append [10];
   int H_conventional, K_conventional, L_conventional;
+  int n;
+  int ndts;
   /*declaring structres*/
   FileCabinet fcab;
   UnitCell ucell;
@@ -71,41 +75,29 @@ int main(int argc, char * argv[])
   
   /*Read the mj file and store variables*/
   read_mjin_header(MJINfilename, &mjc, &fcab, &fsph);
-  /*store HKL indices as conventional */
-  H_conventional = mjc.jzH;
-  K_conventional = mjc.jzK;
-  L_conventional = mjc.jzL;
+  ndts = mjc.ndts;
 
   /*open log file and print header*/
   strcpy(MJLOGfilename, fcab.MJOUTfilename);
   strcat(MJLOGfilename, "_");
-  sprintf(H_append, "%d", H_conventional);
-  strcat(MJLOGfilename, H_append);
-  sprintf(K_append, "%d", K_conventional);
-  strcat(MJLOGfilename, K_append);
-  sprintf(L_append, "%d", L_conventional);
-  strcat(MJLOGfilename, L_append);
+  sprintf(ndts_append, "%d", ndts);
+  strcat(MJLOGfilename, "HKL");
   strcat(MJLOGfilename, ".mjlog");
   flog = fopen(MJLOGfilename, "w");
   if(flog==NULL) {
     printf("%s not found. \n", MJLOGfilename);
     exit(0);
   }  
-
   /*store file names*/
   strcpy(ABOfilename, fcab.ABOfilename);
   strcpy(MJOUTfilename, fcab.MJOUTfilename);
   fprintf(flog, "mjin: %s\n", ABOfilename);
   fprintf(flog, "mjout: %s\n", MJOUTfilename);
-  /*transfrom HKL to primitive centering*/
-  transform_HKL(&mjc); 
-  /*store primitive HKL in VectorIndices array*/
-  vect.H = mjc.jzH;
-  vect.K = mjc.jzK;
-  vect.L = mjc.jzL;
-  printf("H=%d K=%d L=%d (%d %d %d)\n", vect.H, vect.K, vect.L, H_conventional, K_conventional, L_conventional); 
-  fprintf(flog, "\nHKL conventional: %d %d %d\n", H_conventional, K_conventional, L_conventional);
-  fprintf(flog, "HKL primitive: %d %d %d\n", vect.H, vect.K, vect.L); 
+  fprintf(flog, "\n Number of HKL: %d\n", ndts);
+  for(n=0;n<ndts;n++) {
+    fprintf(flog, "DTSET %d\t HKL = %d %d %d\n", n+1, mjc.jzH[n], mjc.jzK[n], mjc.jzL[n]);
+  }
+  fprintf(flog, "\nBegin Reading Files...\n");
 
   /*Read Potential file*/
   strcpy(POTfilename, ABOfilename);
@@ -114,55 +106,86 @@ int main(int argc, char * argv[])
 
   /*Find Unit Cell parameters in real and reciprocal space*/
   Determine_CellParameters(flog, &ucell, &grid);
+  symmorphic_symmetry(&symm); 
   
   /*Perform FFT on Real space potential grid*/
   FFTon_RealGrid(flog, &bin, &grid, &ucell);
+  bin.cc_rec_grid= FreeMemory_threeD_complex(bin.cc_rec_grid, grid.ngfftx, grid.ngffty);
 
   /*Read Wavefunction file*/
   strcpy(WFKfilename, ABOfilename);
   strcat(WFKfilename, "_o_WFK");
   read_binary_abinit(flog, WFKfilename, 0, &ucell, &grid, &symm, &wave, &bin, &atom); 
-  printf("\n");
 
   /*Find band energy range to scan*/
   find_energy_bounds(flog, &wave, &estp); 
-
-  /*Find nonsymmorphic Symmetry related to HKL points*/
-  symmorphic_symmetry(&symm); 
-  find_symmetric_hkl(flog, &vect, &symm, &grid); 
-  
-  /*find the shell in reciprocal space to include potential energy contributions*/
-  find_MJregion(flog, &vect, &ucell);
-  
-  /*calculate the local potential energy contribution*/
-  mjhpHKL_local_potential(flog, &vect, &grid, &estp, &wave, &ucell, &bin, &econ);
 
   /*Read psp information from *out file*/
   strcpy(ABOUTfilename, ABOfilename);
   strcat(ABOUTfilename, ".out");
   read_PSPdata(flog, ABOUTfilename, &psp, &atom); 
+  /*end of reading in info*/
 
-  /*calculate the nonlocal potential energy contribution*/
-  mjhpHKL_nonlocal_potential(flog, &vect, &grid, &estp, &wave, &psp, &ucell, &atom, &econ);
+  /*being calcing potential for HKL sets*/
+  for (n=0;n<ndts;n++) {
+    /*store HKL indices as conventional */
+    mjc.nH = mjc.jzH[n];
+    mjc.nK = mjc.jzK[n];
+    mjc.nL = mjc.jzL[n];
+  	H_conventional = mjc.nH; 
+  	K_conventional = mjc.nK; 
+  	L_conventional = mjc.nL; 
+    fprintf(flog, "\nDTSET %d\t HKL = %d %d %d\n", n+1, mjc.nH, mjc.nK, mjc.nL);
+    printf("\n\nDTSET %d\t HKL = %d %d %d\n", n+1, mjc.nH, mjc.nK, mjc.nL);
 
-  /*combine nonlocal and local potential energy*/
-  concatinate_HKL_potential(flog, &econ, &estp);
+	/*transfrom HKL to primitive centering*/
+	transform_HKL(&mjc); 
+	/*store primitive HKL in VectorIndices array*/
+	vect.H = mjc.nH;
+	vect.K = mjc.nK;
+	vect.L = mjc.nL;
+	printf("H=%d K=%d L=%d (%d %d %d)\n", vect.H, vect.K, vect.L, H_conventional, K_conventional, L_conventional); 
+	fprintf(flog, "\nHKL conventional: %d %d %d\n", H_conventional, K_conventional, L_conventional);
+	fprintf(flog, "HKL primitive: %d %d %d\n", vect.H, vect.K, vect.L); 
+	
+	/*Find nonsymmorphic Symmetry related to HKL points*/
+	find_symmetric_hkl(flog, &vect, &symm, &grid); 
+	
+	/*find the shell in reciprocal space to include potential energy contributions*/
+	find_MJregion(flog, &vect, &ucell);
+	
+	/*calculate the local potential energy contribution*/
+	mjhpHKL_local_potential(flog, &vect, &grid, &estp, &wave, &ucell, &bin, &econ);
+	
+    /*calculate the nonlocal potential energy contribution*/
+	mjhpHKL_nonlocal_potential(flog, &vect, &grid, &estp, &wave, &psp, &ucell, &atom, &econ);
 
-  /*Integrate the total potential energy up to Ef*/
-  integrate_HKL_potential(flog, &econ, &estp, &atom);
-  
-  /*print total potential energy contributions*/ 
-  strcat(MJOUTfilename, "_");
-  strcat(MJOUTfilename, H_append);
-  strcat(MJOUTfilename, K_append);
-  strcat(MJOUTfilename, L_append);
-  strcat(MJOUTfilename, ".mjout");
-  fprintf(flog, "\nPrinting potential energy contributions to %s\n", MJOUTfilename);
-  print_mjhpHKL_energy(MJOUTfilename, &vect, &estp, &ucell, &fcab, &econ);
+	/*combine nonlocal and local potential energy*/
+	concatinate_HKL_potential(flog, &econ, &estp);
+
+	/*Integrate the total potential energy up to Ef*/
+	integrate_HKL_potential(flog, &econ, &estp, &atom);
+	
+	/*print total potential energy contributions*/ 
+	sprintf(H_append, "%d", H_conventional);
+	sprintf(K_append, "%d", K_conventional);
+	sprintf(L_append, "%d", L_conventional);
+    strcpy(MJOUTfilename_N, MJOUTfilename);
+	strcat(MJOUTfilename_N, "_");
+	strcat(MJOUTfilename_N, H_append);
+	strcat(MJOUTfilename_N, K_append);
+	strcat(MJOUTfilename_N, L_append);
+	strcat(MJOUTfilename_N, ".mjout");
+	fprintf(flog, "\nPrinting potential energy contributions to %s\n", MJOUTfilename_N);
+	print_mjhpHKL_energy(MJOUTfilename_N, &vect, &estp, &ucell, &fcab, &econ);
+  }
+
 
   /*Free allocated memory not needed anymore*/
   fprintf(flog, "\nFree Allocated Variables\n");
   FreeMemory_Wavefunctions(&wave);
+  bin.rec_grid = FreeMemory_threeD_complex(bin.rec_grid, grid.ngfftx, grid.ngffty);
+  FreeMemory_PSPvariables(&psp);
   wave.npw = FreeMemory_oneD_int(wave.npw);
   symm.symrel = FreeMemory_threeD_int(symm.symrel, 3, 3);
   atom.typat = FreeMemory_oneD_int(atom.typat);
@@ -179,6 +202,9 @@ int main(int argc, char * argv[])
   vect.H_posarr = FreeMemory_oneD_int(vect.H_posarr);
   vect.K_posarr =  FreeMemory_oneD_int(vect.K_posarr);
   vect.L_posarr = FreeMemory_oneD_int(vect.L_posarr);
+  mjc.jzH = FreeMemory_oneD_int(mjc.jzH);
+  mjc.jzK = FreeMemory_oneD_int(mjc.jzK);
+  mjc.jzL = FreeMemory_oneD_int(mjc.jzL);
 
   fprintf(flog, "\n\nEND OF FILE\n");
   fclose(flog);

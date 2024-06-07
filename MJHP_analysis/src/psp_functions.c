@@ -89,7 +89,7 @@ void read_PSPdata(FILE * flog, char filename[100], Pseudopotential* PSP, AtomicV
   ntypat = ATM->ntypat;
 
   fprintf(flog, "\nReading %s for PSP data\n", filename);
-  printf("\nReading %s for PSP data\n", filename);
+  printf("\tReading %s for PSP data\n", filename);
   /*open abinit *.out file in read mode*/
   faout = fopen(filename, "r");
   if(faout==NULL) {

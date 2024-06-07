@@ -455,7 +455,6 @@ void mjhpHKL_nonlocal_potential(FILE * flog, VectorIndices *VECT, NumberGrid* GR
   theta = FreeMemory_oneD_double(theta);
   p = FreeMemory_fourD_double(p, PW_max, 4, 4);
   Plm = FreeMemory_threeD_double(Plm, PW_max, 4);
-  FreeMemory_PSPvariables(PSP);
 
 }   //END of Calculate Nonlocal energy contribution function 
 

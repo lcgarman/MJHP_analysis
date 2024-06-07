@@ -18,7 +18,11 @@ void transform_HKL(MottJonesConditions * MJC)
   char bcenter = 'B';
   char ccenter = 'C';
   int H_symm, K_symm, L_symm;
+  int H, K, L;
   
+  H = MJC->nH;
+  K = MJC->nK;
+  L = MJC->nL;
   /*separating lattice variable. ie - "cP" -> "c" and "P"*/
   strcpy(lattice, MJC->lattice);
   len_lattice = strlen(lattice);
@@ -32,48 +36,48 @@ void transform_HKL(MottJonesConditions * MJC)
   }
   else if (center==bodycenter) { 
     printf("Transforming HKL: I->P\n");
-	H_symm = (-0.5*MJC->jzH)+(0.5*MJC->jzK)+(0.5*MJC->jzL);
-	K_symm = (0.5*MJC->jzH)+(-0.5*MJC->jzK)+(0.5*MJC->jzL);
-	L_symm = (0.5*MJC->jzH)+(0.5*MJC->jzK)+(-0.5*MJC->jzL);
-    MJC->jzH = H_symm;
-    MJC->jzK = K_symm;
-    MJC->jzL = L_symm;
+	H_symm = (-0.5*H)+(0.5*K)+(0.5*L);
+	K_symm = (0.5*H)+(-0.5*K)+(0.5*L);
+	L_symm = (0.5*H)+(0.5*K)+(-0.5*L);
+    H = H_symm;
+    K = K_symm;
+    L = L_symm;
   }
   else if (center==facecenter) { 
     printf("Transforming HKL: F->P\n");
-	H_symm = (0.0*MJC->jzH)+(0.5*MJC->jzK)+(0.5*MJC->jzL);
-	K_symm = (0.5*MJC->jzH)+(0.0*MJC->jzK)+(0.5*MJC->jzL);
-	L_symm = (0.5*MJC->jzH)+(0.5*MJC->jzK)+(0.0*MJC->jzL);
-    MJC->jzH = H_symm;
-    MJC->jzK = K_symm;
-    MJC->jzL = L_symm;
+	H_symm = (0.0*H)+(0.5*K)+(0.5*L);
+	K_symm = (0.5*H)+(0.0*K)+(0.5*L);
+	L_symm = (0.5*H)+(0.5*K)+(0.0*L);
+    H = H_symm;
+    K = K_symm;
+    L = L_symm;
   }
   else if (center==acenter) { 
     printf("Transforming HKL: A->P\n");
-	H_symm = (1.0*MJC->jzH)+(0.0*MJC->jzK)+(0.0*MJC->jzL);
-	K_symm = (0.0*MJC->jzH)+(0.5*MJC->jzK)+(-0.5*MJC->jzL);
-	L_symm = (0.0*MJC->jzH)+(0.5*MJC->jzK)+(0.5*MJC->jzL);
-    MJC->jzH = H_symm;
-    MJC->jzK = K_symm;
-    MJC->jzL = L_symm;
+	H_symm = (1.0*H)+(0.0*K)+(0.0*L);
+	K_symm = (0.0*H)+(0.5*K)+(-0.5*L);
+	L_symm = (0.0*H)+(0.5*K)+(0.5*L);
+    H = H_symm;
+    K = K_symm;
+    L = L_symm;
   }
   else if (center==bcenter) { 
     printf("Transforming HKL: B->P\n");
-	H_symm = (0.5*MJC->jzH)+(0.0*MJC->jzK)+(-0.5*MJC->jzL);
-	K_symm = (0.0*MJC->jzH)+(1.0*MJC->jzK)+(0.0*MJC->jzL);
-	L_symm = (0.5*MJC->jzH)+(0.0*MJC->jzK)+(0.5*MJC->jzL);
-    MJC->jzH = H_symm;
-    MJC->jzK = K_symm;
-    MJC->jzL = L_symm;
+	H_symm = (0.5*H)+(0.0*K)+(-0.5*L);
+	K_symm = (0.0*H)+(1.0*K)+(0.0*L);
+	L_symm = (0.5*H)+(0.0*K)+(0.5*L);
+    H = H_symm;
+    K = K_symm;
+    L = L_symm;
   }
   else if (center==ccenter) { 
     printf("Transforming HKL: C->P\n");
-	H_symm = (0.5*MJC->jzH)+(-0.5*MJC->jzK)+(0.0*MJC->jzL);
-	K_symm = (0.5*MJC->jzH)+(0.5*MJC->jzK)+(0.0*MJC->jzL);
-	L_symm = (0.0*MJC->jzH)+(0.0*MJC->jzK)+(1.0*MJC->jzL);
-    MJC->jzH = H_symm;
-    MJC->jzK = K_symm;
-    MJC->jzL = L_symm;
+	H_symm = (0.5*H)+(-0.5*K)+(0.0*L);
+	K_symm = (0.5*H)+(0.5*K)+(0.0*L);
+	L_symm = (0.0*H)+(0.0*K)+(1.0*L);
+    H = H_symm;
+    K = K_symm;
+    L = L_symm;
   }
   else {
     printf("ERROR: No Code written for %s\n", MJC->lattice);
@@ -81,6 +85,9 @@ void transform_HKL(MottJonesConditions * MJC)
     exit(0);
   }
 
+  MJC->nH = H;
+  MJC->nK = K;
+  MJC->nL = L;
 } //END of Transform_hklreflection_
 
 void find_symmetric_hkl(FILE * flog, VectorIndices* VECT, Symmetry* SYM, NumberGrid* GRD) 
