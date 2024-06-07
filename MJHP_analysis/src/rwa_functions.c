@@ -16,7 +16,7 @@ void read_mjin_header(char filename[100], MottJonesConditions * MJC, FileCabinet
   char lattice[10];
   double vec; 
   int jzH, jzK, jzL;
-  double scanE_low, scanE_high;
+  double scanE_min, scanE_mid, scanE_max;
 
   printf("Reading %s\n", filename);
   mjin_file=fopen(filename,"r+"); /*open the filename in read/write mode*/
@@ -44,10 +44,12 @@ void read_mjin_header(char filename[100], MottJonesConditions * MJC, FileCabinet
   MJC->jzL = jzL;
 
   fscanf(mjin_file, "%s", strv);
-  fscanf(mjin_file, "%lf", &scanE_low);
-  fscanf(mjin_file, "%lf", &scanE_high);
-  MJC->scanE_low = scanE_low;
-  MJC->scanE_high = scanE_high;
+  fscanf(mjin_file, "%lf", &scanE_min);
+  fscanf(mjin_file, "%lf", &scanE_mid);
+  fscanf(mjin_file, "%lf", &scanE_max);
+  MJC->scanE_min = scanE_min;
+  MJC->scanE_mid = scanE_mid;
+  MJC->scanE_max = scanE_max;
 
   fclose(mjin_file);
 } //END of readSS 
@@ -148,4 +150,93 @@ void print_mjhp2theta_energy(char filename[200], TwoTheta *TTH, EnergyStep * EST
   /*free energy contribution*/
   ECON->rflc_total = FreeMemory_twoD_double(ECON->rflc_total, nEstep);
 } //END of Print_Reflection function
+
+void print_XSF(char filename[200], UnitCell* UC, NumberGrid* GRD, BinaryGrid* BIN, AtomicVariables* ATM)
+{
+  FILE * fxsf;
+  int jx, jy, jz;
+  int j;
+  int natom;
+  double x, y, z;
+  double* Xcart;
+  double* Ycart;
+  double* Zcart;
+  int NGX, NGY, NGZ;
+  int line_counter;
+
+  natom = ATM->natom;
+  NGX = GRD->NGX;
+  NGY = GRD->NGY;
+  NGZ = GRD->NGZ;
+  Xcart = NULL;
+  Ycart = NULL;
+  Zcart = NULL;
+
+  printf("\nPrinting MJHP Density to: %s\n", filename);
+  fxsf=fopen(filename, "w");
+  if (fxsf==NULL) {
+    printf("ERROR: %s not found\n", filename);
+    exit(0);
+  }
+
+  /*allocate mem for XYZcart*/
+  Xcart = AllocateMemory_oneD_double(Xcart, natom);
+  Ycart = AllocateMemory_oneD_double(Ycart, natom);
+  Zcart = AllocateMemory_oneD_double(Zcart, natom);
+
+  /*Calculate cartesian XYZ of atoms*/
+  for (j=0;j<natom;j++) {
+	x = ATM->xred[0][j];
+	y = ATM->xred[1][j];
+	z = ATM->xred[2][j];
+	Xcart[j] = x*UC->ang_ax+y*UC->ang_bx+z*UC->ang_cx; 
+	Ycart[j] = x*UC->ang_ay+y*UC->ang_by+z*UC->ang_cy; 
+	Zcart[j] = x*UC->ang_az+y*UC->ang_bz+z*UC->ang_cz; 
+  }
+
+  fprintf(fxsf, " DIM-GROUP\n"); 
+  fprintf(fxsf, " 3 1 \n");
+  fprintf(fxsf, "PRIMVEC\n"); 
+  fprintf(fxsf, "\t%.10f\t%.10f\t%.10f\n", UC->ang_ax, UC->ang_ay, UC->ang_az); 
+  fprintf(fxsf, "\t%.10f\t%.10f\t%.10f\n", UC->ang_bx, UC->ang_by, UC->ang_bz); 
+  fprintf(fxsf, "\t%.10f\t%.10f\t%.10f\n", UC->ang_cx, UC->ang_cy, UC->ang_cz); 
+  /* coordinates of primitive lattice */
+  fprintf(fxsf, "PRIMCOORD\n" ); 
+  fprintf(fxsf, "\t\t%d%3d\n", natom, 1); 
+  for(j=0;j<natom;j++) {
+    fprintf(fxsf, "%9d%20.10lf%20.10lf%20.10lf\n", ATM->atomicno[j], Xcart[j], Ycart[j], Zcart[j]);
+  }
+  fprintf(fxsf," BEGIN_BLOCK_DATAGRID3D\n");
+  fprintf(fxsf," Written_by_print_XSF\n");
+  fprintf(fxsf," DATAGRID_3D_DENSITY\n");
+  fprintf(fxsf, "\t\t%d\t%d\t%d\n", NGX, NGY, NGZ);
+  /*shift grid is set to 0 0 0 */
+  fprintf(fxsf, "%lf\t%lf\t%lf\n", 0.0, 0.0, 0.0); 
+  fprintf(fxsf, "\t%.10f\t%.10f\t%.10f\n", UC->ang_ax, UC->ang_ay, UC->ang_az); 
+  fprintf(fxsf, "\t%.10f\t%.10f\t%.10f\n", UC->ang_bx, UC->ang_by, UC->ang_bz); 
+  fprintf(fxsf, "\t%.10f\t%.10f\t%.10f\n", UC->ang_cx, UC->ang_cy, UC->ang_cz); 
+  line_counter=0; 
+  for(jz=0;jz<(NGZ);jz++) {
+    for(jy=0;jy<(NGY);jy++) {
+      for(jx=0;jx<(NGX);jx++) {
+        line_counter++;
+        fprintf(fxsf, "\t%.10lf" , BIN->real_grid[jx][jy][jz]);
+        if(line_counter==6) {
+          fprintf(fxsf, "\n");
+          line_counter=0;
+        }
+      }
+    }
+  }
+  fprintf(fxsf, "\nEND_DATAGRID_3D\n" );
+  fprintf(fxsf, "END_BLOCK_DATAGRID3D" );
+  fclose(fxsf);
+  
+  /*free allocated vars*/
+  Xcart = FreeMemory_oneD_double(Xcart);
+  Ycart = FreeMemory_oneD_double(Ycart);
+  Zcart = FreeMemory_oneD_double(Zcart);
+  BIN->real_grid = FreeMemory_threeD_double(BIN->real_grid, NGX, NGY);
+} 
+/*END of outputXSF function*/
 

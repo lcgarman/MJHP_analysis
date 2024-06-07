@@ -1,4 +1,3 @@
-#include </share/apps/dfprograms/fftw3/include/fftw3.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -227,8 +226,11 @@ void read_binary_abinit(FILE * flog, char filename[200], int option, UnitCell* U
     WFK->nband = nbandv;
   }
 
+int max_npw;
+max_npw = 0;
   for(j=0;j<(nkpt);j++) {
     fread(&npwv, sizeof(int), 1, fab);
+if(npwv>max_npw) max_npw = npwv;
     WFK->npw[j] = npwv;
   }
 

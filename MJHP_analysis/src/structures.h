@@ -125,6 +125,8 @@ typedef struct {
   int* L_posarr;
   double minr;
   double maxr;
+  double scanE_start;
+  double scanE_stop;
 } VectorIndices;
 
 typedef struct {
@@ -142,8 +144,9 @@ typedef struct {
   int* Hpw;
   int* Kpw;
   int* Lpw;
-  double scanE_low;
-  double scanE_high;
+  double scanE_min;
+  double scanE_mid;
+  double scanE_max;
 } MottJonesConditions;
 
 typedef struct {

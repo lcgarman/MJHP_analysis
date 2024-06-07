@@ -1,4 +1,3 @@
-#include </share/apps/dfprograms/fftw3/include/fftw3.h>
 #include <complex.h>
 #include <stdio.h>
 #include <stdlib.h>

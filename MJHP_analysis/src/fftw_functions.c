@@ -1,11 +1,11 @@
-#include </share/apps/dfprograms/fftw3/include/fftw3.h>
+#include <fftw3.h>
 #include <complex.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include <gsl/gsl_complex_math.h>
 #include <gsl/gsl_complex.h>
+#include <math.h>
 #include "globals.h"
 #include "structures.h"
 #include "allocate_memory.h"

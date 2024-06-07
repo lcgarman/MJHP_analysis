@@ -1,7 +1,7 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -fsanitize=address -g
-LDFLAGS = -fsanitize=address -L/share/apps/dfprograms/fftw3/lib -Wl,-rpath,/usr/lib64
+CFLAGS = -Wall -Wextra -fsanitize=address -g -I/share/apps/dfprograms/fftw3/include
+LDFLAGS = -L/share/apps/dfprograms/fftw3/lib -Wl,-rpath,/usr/lib64
 LIBS = -lgsl -lm -lfftw3 -mcmodel=medium 
 
 # Source files

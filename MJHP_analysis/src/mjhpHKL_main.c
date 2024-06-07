@@ -77,7 +77,7 @@ int main(int argc, char * argv[])
   L_conventional = mjc.jzL;
 
   /*open log file and print header*/
-  strcpy(MJLOGfilename, fcab.ABOfilename);
+  strcpy(MJLOGfilename, fcab.MJOUTfilename);
   strcat(MJLOGfilename, "_");
   sprintf(H_append, "%d", H_conventional);
   strcat(MJLOGfilename, H_append);

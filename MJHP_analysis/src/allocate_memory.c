@@ -419,7 +419,7 @@ double**** AllocateMemory_fourD_double(double ****array, int dim1, int dim2, int
   array = malloc(dim1 * sizeof(double***));
   /*check if allocation was successful*/
   if (array == NULL) {
-    printf("(1D) ERROR: Memory Allocation Failed\n");
+    printf("ERROR: Memory Allocation Failed\n");
     exit(0);
   }
 
@@ -428,7 +428,7 @@ double**** AllocateMemory_fourD_double(double ****array, int dim1, int dim2, int
     array[i] = malloc(dim2 * sizeof(double**));
     /*check allocation*/
     if (array[i] == NULL) {
-      printf("(2D) ERROR: Memory Allocation Failed\n");
+      printf("ERROR: Memory Allocation Failed\n");
       /*free previously allocated memory*/
       for (j=0;j<i;j++) {
         free(array[j]);
@@ -442,7 +442,7 @@ double**** AllocateMemory_fourD_double(double ****array, int dim1, int dim2, int
       array[i][j] = malloc(dim3 * sizeof(double*));
       /*check allocation*/
       if (array[i][j] == NULL) {
-        printf("(3D) ERROR: Memory Allocation Failed\n");
+        printf("ERROR: Memory Allocation Failed\n");
         for (k=0;k<j;k++) {
           free(array[i][k]);
         }
@@ -450,21 +450,21 @@ double**** AllocateMemory_fourD_double(double ****array, int dim1, int dim2, int
         free(array);
 		exit(0);
       }
-
+      
       /*allocate fourth dimension*/
       for (k=0;k<dim3;k++) {
         array[i][j][k] = malloc(dim4 * sizeof(double));
         /*check allocation*/
-		if (array[i][j][k] == NULL) {
-		  printf("(4D) ERROR: Memory Allocation Failed\n");
-		  for (l=0;l<k;l++) {
-			free(array[i][j][l]);
-		  }
-		  free(array[i][j]);
-		  free(array[i]);
-		  free(array);
-		  exit(0);
-		}
+        if (array[i][j][k] == NULL) {
+          printf("ERROR: Memory Allocation Failed\n");
+          for (l=0;l<k;l++) {
+            free(array[i][j][l]);
+          }
+          free(array[i][j]);
+          free(array[i]);
+          free(array);
+          exit(0);
+        }
 	  }
     }
   }
