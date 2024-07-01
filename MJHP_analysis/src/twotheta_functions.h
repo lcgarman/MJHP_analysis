@@ -5,7 +5,7 @@
   
   void fold_reflections_toBZ(FILE *flog, TwoTheta *TTH); 
   
-  void symmetry_folded_reflections(FILE *flog, TwoTheta *TTH, Symmetry *SYM); 
+  void symmetry_folded_reflections(FILE * flog, char filename[100], TwoTheta * TTH, Symmetry * SYM);
 
   void print_reflections(char filename[200], TwoTheta *TTH);
 

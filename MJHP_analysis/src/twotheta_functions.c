@@ -233,7 +233,7 @@ void fold_reflections_toBZ(FILE * flog, TwoTheta * TTH)
 
 } //END of fold_reflection_toBZ 
 
-void symmetry_folded_reflections(FILE * flog, TwoTheta * TTH, Symmetry * SYM) 
+void symmetry_folded_reflections(FILE * flog, char filename[100], TwoTheta * TTH, Symmetry * SYM) 
 {
   int nrflc;
   int nsymor;
@@ -249,6 +249,7 @@ void symmetry_folded_reflections(FILE * flog, TwoTheta * TTH, Symmetry * SYM)
   double pw_x, pw_y, pw_z;
   int k;
   double kx, ky, kz;
+  FILE* mabin;
 
   nrflc = TTH->nrflc;
   nsymor = SYM->nsymor;
@@ -331,22 +332,23 @@ void symmetry_folded_reflections(FILE * flog, TwoTheta * TTH, Symmetry * SYM)
 	fprintf(flog, "\t %lf %lf %lf\t%lf %lf %lf %d %d %d\n", pw_x, pw_y, pw_z, TTH->BZkpt_sym[n][0], TTH->BZkpt_sym[n][1], TTH->BZkpt_sym[n][2], TTH->hpw_sym[n], TTH->kpw_sym[n], TTH->lpw_sym[n]);
   }
 
-  /*Print to Command Line copy information*/
-  printf("\nINTO *in FILE:\n");
-  printf("CommentOut: toldfe 1.0d-5 eV \n");
-  printf("CommentOut: occopt 3 \n");
-  printf("CommentOut: istwfk # \n");
-  printf("CommentOut: prtkden\n");
-  printf("CommentOut: usekden\n");
-  printf("      istwfk %d*1\n", nsym_bzk);
-  printf("      tolwfr 0.0000000000001\n");
-  printf("      iscf -2 \n");
-  printf("      kptopt 0\n");
-  printf("      nkpt %d\n", nsym_bzk);
-  printf("      kpt\n");
+  /*print into modified abinit in file*/
+  mabin=fopen(filename, "a");
+  if (mabin==NULL) {
+    printf("%s not found. \n", filename);
+    exit(0);
+  }
+  fprintf(mabin,"\n!---- MJHP 2THETA VARS ----!\n");
+  fprintf(mabin,"      istwfk %d*1\n", nsym_bzk);
+  fprintf(mabin,"      tolwfr 0.0000000000001\n");
+  fprintf(mabin,"      iscf -2 \n");
+  fprintf(mabin,"      kptopt 0\n");
+  fprintf(mabin,"      nkpt %d\n", nsym_bzk);
+  fprintf(mabin,"      kpt\n");
   for (i=0;i<nsym_bzk;i++) {
-    printf("      %lf %lf %lf\n", kx_sym[i], ky_sym[i], kz_sym[i]);
+    fprintf(mabin,"      %lf %lf %lf\n", kx_sym[i], ky_sym[i], kz_sym[i]);
   }  
+  fclose(mabin);
 
   /*Free local memory*/
   kx_sym = FreeMemory_oneD_double(kx_sym);
@@ -465,7 +467,6 @@ void read_reflections(char filename[200], TwoTheta * TTH)
   
   /*read symmetrized and folded BZkpts and HKLpw*/
   fscanf(frflc, "%s", strv);
-printf("WORKING\n");
   for  (n=0;n<nrflc;n++) {
     fscanf(frflc, "%d", &rflc_no);
     fscanf(frflc, "%d %d %d", &rflc_Hv, &rflc_Kv, &rflc_Lv);

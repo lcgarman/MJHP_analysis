@@ -180,6 +180,14 @@ int main(int argc, char * argv[])
 	/*print total potential energy contributions*/ 
 	fprintf(flog, "\nPrinting Mott-Jones Density to: %s\n", MJXSFfilename_N2);
 	print_XSF(MJXSFfilename_N2, &ucell, &grid, &bin, &atom);
+
+	/*free HKL variables for next iteration*/
+	vect.H_arr = FreeMemory_oneD_int(vect.H_arr);
+	vect.K_arr = FreeMemory_oneD_int(vect.K_arr);
+	vect.L_arr = FreeMemory_oneD_int(vect.L_arr);
+	vect.H_posarr = FreeMemory_oneD_int(vect.H_posarr);
+	vect.K_posarr =  FreeMemory_oneD_int(vect.K_posarr);
+	vect.L_posarr = FreeMemory_oneD_int(vect.L_posarr);
   }
 	
   /*Free allocated memory not needed anymore*/
@@ -195,12 +203,6 @@ int main(int argc, char * argv[])
   atom.xred = FreeMemory_twoD_double(atom.xred, 3);
   wave.eigen = FreeMemory_twoD_double(wave.eigen, wave.nkpt);
   symm.symor = FreeMemory_threeD_int(symm.symor, 3, 3);
-  vect.H_arr = FreeMemory_oneD_int(vect.H_arr);
-  vect.K_arr = FreeMemory_oneD_int(vect.K_arr);
-  vect.L_arr = FreeMemory_oneD_int(vect.L_arr);
-  vect.H_posarr = FreeMemory_oneD_int(vect.H_posarr);
-  vect.K_posarr =  FreeMemory_oneD_int(vect.K_posarr);
-  vect.L_posarr = FreeMemory_oneD_int(vect.L_posarr);
 
   fprintf(flog, "\n\nEND OF FILE\n");
   fclose(flog);

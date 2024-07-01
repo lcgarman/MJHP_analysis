@@ -24,6 +24,8 @@ int main(int argc, char * argv[])
   char RFLCfilename [200];
   char MJLOGfilename [200];
   char ABOfilename [200];
+  char ABINfilename [200];
+  char MABINfilename [200];
   char DENfilename [200];
   /*declaring structres*/
   FileCabinet fcab;
@@ -40,6 +42,7 @@ int main(int argc, char * argv[])
   if (argc > 1) {
       //copy file string to inupt files
     strcpy(MJINfilename, argv[1]);
+printf("working\n");
   }
   else {
     printf("USAGE: prepare_mjhp2theta <*.mjin> ");
@@ -74,6 +77,13 @@ int main(int argc, char * argv[])
   fprintf(flog, "mjin: %s\n", ABOfilename);
   fprintf(flog, "rflc: %s\n", RFLCfilename);
 
+  /*read abinit *in file and modify variables*/
+  strcpy(ABINfilename, ABOfilename);
+  strcat(ABINfilename, ".in");
+  strcpy(MABINfilename, ABINfilename);
+  strcat(MABINfilename, "-modified");
+  modify_abinitin(ABINfilename, MABINfilename);
+
   /*Read Potential file*/
   strcpy(DENfilename, ABOfilename);
   strcat(DENfilename, "_i_DEN");
@@ -97,15 +107,18 @@ int main(int argc, char * argv[])
   /*fold the reflections back into the 1st BZ*/
   fold_reflections_toBZ(flog, &tth);
   /*apply symmetry to minimize the number of kpts needed to analyze*/
-  symmetry_folded_reflections(flog, &tth, &symm);
+  symmetry_folded_reflections(flog, MABINfilename, &tth, &symm);
 
   /*print total potential energy contributions*/ 
   strcat(RFLCfilename, ".rflc");
   fprintf(flog, "\nPrinting Reflection Information to %s\n", RFLCfilename);
   print_reflections(RFLCfilename, &tth);
 
+  /*rename modified abinit in file to original in filename*/
+  remove(ABINfilename);
+  rename(MABINfilename, ABINfilename);
+
   /*Free allocated memory not needed anymore*/
-  
   fprintf(flog, "\nFree Allocated Variables\n");
   symm.symrel = FreeMemory_threeD_int(symm.symrel, 3, 3);
   atom.typat = FreeMemory_oneD_int(atom.typat);

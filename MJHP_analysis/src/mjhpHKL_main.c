@@ -178,6 +178,14 @@ int main(int argc, char * argv[])
 	strcat(MJOUTfilename_N, ".mjout");
 	fprintf(flog, "\nPrinting potential energy contributions to %s\n", MJOUTfilename_N);
 	print_mjhpHKL_energy(MJOUTfilename_N, &vect, &estp, &ucell, &fcab, &econ);
+ 
+	/*free HKL variables for next iteration*/
+	vect.H_arr = FreeMemory_oneD_int(vect.H_arr);
+	vect.K_arr = FreeMemory_oneD_int(vect.K_arr);
+	vect.L_arr = FreeMemory_oneD_int(vect.L_arr);
+	vect.H_posarr = FreeMemory_oneD_int(vect.H_posarr);
+	vect.K_posarr =  FreeMemory_oneD_int(vect.K_posarr);
+	vect.L_posarr = FreeMemory_oneD_int(vect.L_posarr);
   }
 
 
@@ -196,12 +204,6 @@ int main(int argc, char * argv[])
   atom.xred = FreeMemory_twoD_double(atom.xred, 3);
   wave.eigen = FreeMemory_twoD_double(wave.eigen, wave.nkpt);
   symm.symor = FreeMemory_threeD_int(symm.symor, 3, 3);
-  vect.H_arr = FreeMemory_oneD_int(vect.H_arr);
-  vect.K_arr = FreeMemory_oneD_int(vect.K_arr);
-  vect.L_arr = FreeMemory_oneD_int(vect.L_arr);
-  vect.H_posarr = FreeMemory_oneD_int(vect.H_posarr);
-  vect.K_posarr =  FreeMemory_oneD_int(vect.K_posarr);
-  vect.L_posarr = FreeMemory_oneD_int(vect.L_posarr);
   mjc.jzH = FreeMemory_oneD_int(mjc.jzH);
   mjc.jzK = FreeMemory_oneD_int(mjc.jzK);
   mjc.jzL = FreeMemory_oneD_int(mjc.jzL);

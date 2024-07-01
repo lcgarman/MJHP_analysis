@@ -9,4 +9,8 @@
 
   void print_XSF(char filename[200], UnitCell* UC, NumberGrid* GRD, BinaryGrid* BIN, AtomicVariables* ATM);
 
+  void modify_line(char *line, Modification modifications[], int num_modifications);
+
+  void modify_abinitin(char in_filename[100], char out_filename[100]);
+
 #endif

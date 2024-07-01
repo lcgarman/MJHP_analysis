@@ -187,4 +187,9 @@ typedef struct {
   double** rflc_total;
 } EnergyContribution;
 
+  typedef struct {
+    char *search;
+    char *replace;
+  } Modification;
+
 #endif

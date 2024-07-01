@@ -13,6 +13,7 @@ void read_mjin_header(char filename[100], MottJonesConditions * MJC, FileCabinet
   char strv[20];
   char ABOfilename[100];
   char MJOUTfilename[100];
+  int check;
   char lattice[10];
   double vec; 
   int n;
@@ -46,7 +47,8 @@ void read_mjin_header(char filename[100], MottJonesConditions * MJC, FileCabinet
   MJC->jzK = AllocateMemory_oneD_int(MJC->jzK, ndts);
   MJC->jzL = AllocateMemory_oneD_int(MJC->jzL, ndts);
  
-  fscanf(mjin_file, "%s", strv);
+  check=fscanf(mjin_file, "%s", strv);
+  if (check==EOF) return;
   for (n=0;n<ndts;n++) {
 	fscanf(mjin_file, "%d", &jzH);
 	fscanf(mjin_file, "%d", &jzK);
@@ -56,7 +58,8 @@ void read_mjin_header(char filename[100], MottJonesConditions * MJC, FileCabinet
 	MJC->jzL[n] = jzL;
   }
 	
-  fscanf(mjin_file, "%s", strv);
+  check=fscanf(mjin_file, "%s", strv);
+  if (check==EOF) return;
   fscanf(mjin_file, "%lf", &scanE_min);
   fscanf(mjin_file, "%lf", &scanE_mid);
   fscanf(mjin_file, "%lf", &scanE_max);
@@ -252,4 +255,69 @@ void print_XSF(char filename[200], UnitCell* UC, NumberGrid* GRD, BinaryGrid* BI
   BIN->real_grid = FreeMemory_threeD_double(BIN->real_grid, NGX, NGY);
 } 
 /*END of outputXSF function*/
+
+
+void modify_line(char *line, Modification modifications[], int num_modifications)
+{
+  int max_line = 1024;
+  int i;
+  char modified_line[max_line];
+
+  /*search through number of modifications to be made*/
+  for (i=0;i<num_modifications;i++) {
+    /*search for the word that should be modified*/
+    if (strstr(line, modifications[i].search) != NULL) {
+      /*if found, make the modification - copy the line with the modification before*/
+      snprintf(modified_line, sizeof(modified_line), "%s%s", modifications[i].replace, line);
+      /*replace the original line with the modified version*/
+      strcpy(line, modified_line);
+      break;
+    }
+  } 
+}
+  
+void modify_abinitin(char in_filename[100], char out_filename[100])
+{
+  const int num_modifications = 8;
+  FILE* abin;
+  FILE* mabin;
+  int max_line = 1024;
+  char line[max_line];
+
+  /*initialize modifications structure*/
+  Modification modifications[] = {
+{"toldfe", "!"},
+{"occopt", "!"},
+{"istwfk", "!"},
+{"nshiftk", "!"},
+{"shiftk", "!"},
+{"ngkpt", "!"},
+{"usekden", "!"},
+{"prtkden", "!"},
+  };
+
+  /*open existing abinit in file to read*/
+  printf("Modifying %s\n.", in_filename);
+  abin=fopen(in_filename, "r");
+  if (abin==NULL) {
+    printf("%s not found. \n", in_filename);
+    exit(0);
+  }
+  /*open a new file to modify the in file*/
+  mabin=fopen(out_filename, "w");
+  if (mabin==NULL) {
+    printf("%s not found. \n", out_filename);
+    exit(0);
+  }
+
+  while (fgets(line, sizeof(line), abin) != NULL) {
+    modify_line(line, modifications, num_modifications);
+    fputs(line, mabin);
+  }
+
+  fclose(abin); 
+  fclose(mabin); 
+      
+} //END of  modify_abinitin function
+    
 
