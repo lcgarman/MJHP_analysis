@@ -261,7 +261,7 @@ if(npwv>max_npw) max_npw = npwv;
 	SYM->symrel[1][2][j] = symrel_nz;
     fread(&symrel_pz, sizeof(int), 1, fab);
 	SYM->symrel[2][2][j] = symrel_pz;
-	//printf(" %d\n\t%d %d %d\n\t%d %d %d\n\t%d %d %d\n\n", j, SYM->symrel[0][0][j], SYM->symrel[0][1][j], SYM->symrel[0][2][j], SYM->symrel[1][0][j], SYM->symrel[1][1][j], SYM->symrel[1][2][j], SYM->symrel[2][0][j], SYM->symrel[2][1][j], SYM->symrel[2][2][j]);
+//printf(" %d\n\t%d %d %d\n\t%d %d %d\n\t%d %d %d\n\n", j, SYM->symrel[0][0][j], SYM->symrel[0][1][j], SYM->symrel[0][2][j], SYM->symrel[1][0][j], SYM->symrel[1][1][j], SYM->symrel[1][2][j], SYM->symrel[2][0][j], SYM->symrel[2][1][j], SYM->symrel[2][2][j]);
   }
   for(j=0;j<(natom);j++) {
     fread(&typatv, sizeof(int), 1, fab);

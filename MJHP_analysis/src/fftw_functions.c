@@ -44,10 +44,10 @@ void FFTon_RealGrid(FILE * flog, BinaryGrid* BIN, NumberGrid* GRD, UnitCell* UC)
   BIN->cc_rec_grid = AllocateMemory_threeD_complex(BIN->cc_rec_grid, ngfftx, ngffty, ngfftz);
 
   /*fill input fft grid with Binary real space grid*/
-  for (jz=0;jz<NGZ;jz++) {
+  for(jx=0;jx<NGX;jx++) {
     for(jy=0;jy<NGY;jy++) {
-      for(jx=0;jx<NGX;jx++) {
-        i_index = jz*ngfftx*ngffty+jy*ngfftx+jx;
+	  for (jz=0;jz<NGZ;jz++) {
+        i_index = jx*ngfftz*ngffty+jy*ngfftz+jz;
 	    if ((jx<ngfftx)&&(jy<ngffty)&&(jz<ngfftz)) {
 		  grid_in[i_index][REAL] = BIN->real_grid[jx][jy][jz];
 		  grid_in[i_index][IMAG] = 0.0;
@@ -82,3 +82,4 @@ void FFTon_RealGrid(FILE * flog, BinaryGrid* BIN, NumberGrid* GRD, UnitCell* UC)
   BIN->real_grid = FreeMemory_threeD_double(BIN->real_grid, NGX, NGY);
 
 } //END of FFTon_RealGrid
+

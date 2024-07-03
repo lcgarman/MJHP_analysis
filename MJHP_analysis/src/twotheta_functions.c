@@ -47,7 +47,7 @@ void calculate_powder_pattern(FILE * flog, TwoTheta * TTH, BinaryGrid* BIN, Numb
   ngfftz = GRD->ngfftz;
   nsymor = SYM->nsymor;
   symm_nhkl = 0;
-  tol = 1e-5;
+  tol = 1e-10;
   
   /*Initialize arrays*/
   rflc_mult = NULL; 
