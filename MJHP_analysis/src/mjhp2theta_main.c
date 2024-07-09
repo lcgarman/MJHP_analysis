@@ -22,10 +22,8 @@ int main(int argc, char * argv[])
 {
 
   /*declaring filenames*/
-  FILE* flog;
   char MJINfilename [200];
   char MJOUTfilename [200];
-  char MJLOGfilename [200];
   char RFLCfilename [200];
   char ABOfilename [200];
   char ABOUTfilename [200];
@@ -72,72 +70,62 @@ int main(int argc, char * argv[])
   read_mjin_header(MJINfilename, &mjc, &fcab, &fsph);
   /*store HKL indices as conventional */
 
-  /*open log file and print header*/
-  strcpy(MJLOGfilename, fcab.ABOfilename);
-  strcat(MJLOGfilename, "_2theta");
-  strcat(MJLOGfilename, ".mjlog");
-  flog = fopen(MJLOGfilename, "w");
-  if(flog==NULL) {
-    printf("%s not found. \n", MJLOGfilename);
-    exit(0);
-  }  
-
   /*store file names*/
   strcpy(ABOfilename, fcab.ABOfilename);
   strcpy(MJOUTfilename, fcab.MJOUTfilename);
-  fprintf(flog, "mjin: %s\n", ABOfilename);
-  fprintf(flog, "mjout: %s\n", MJOUTfilename);
+  printf( "mjin: %s\n", ABOfilename);
+  printf( "mjout: %s\n", MJOUTfilename);
   
   /*read reflection file*/
   strcpy(RFLCfilename, MJOUTfilename);
   strcat(RFLCfilename, ".rflc");
-  fprintf(flog, "rflc: %s\n", RFLCfilename);
-  fprintf(flog, "\nReading Reflections from %s\n", RFLCfilename);
+  printf( "rflc: %s\n", RFLCfilename);
+  printf( "\nReading Reflections from %s\n", RFLCfilename);
   read_reflections(RFLCfilename, &tth); 
 
   /*Read _i_Density for Fermi energy file*/
   strcpy(DENfilename, ABOfilename);
   strcat(DENfilename, "_i_DEN");
-  read_binary_abinit(flog, DENfilename, 1, &ucell, &grid, &symm, &wave, &bin, &atom);
+  read_binary_abinit(DENfilename, 1, &ucell, &grid, &symm, &wave, &bin, &atom);
   fermi = wave.fermi;
 
   /*Read Potential file*/
   strcpy(POTfilename, ABOfilename);
   strcat(POTfilename, "_o_POT");
-  read_binary_abinit(flog, POTfilename, 1, &ucell, &grid, &symm, &wave, &bin, &atom);
+  read_binary_abinit(POTfilename, 1, &ucell, &grid, &symm, &wave, &bin, &atom);
 
   /*Find Unit Cell parameters in real and reciprocal space*/
-  Determine_CellParameters(flog, &ucell, &grid);
+  Determine_CellParameters(&ucell, &grid);
   
   /*Perform FFT on Real space potential grid*/
-  FFTon_RealGrid(flog, &bin, &grid, &ucell);
+  FFTon_RealGrid(&bin, &grid, &ucell);
 
   /*Read Wavefunction file*/
   strcpy(WFKfilename, ABOfilename);
   strcat(WFKfilename, "_o_WFK");
-  read_binary_abinit(flog, WFKfilename, 0, &ucell, &grid, &symm, &wave, &bin, &atom); 
+  read_binary_abinit(WFKfilename, 0, &ucell, &grid, &symm, &wave, &bin, &atom); 
   printf("\n");
 
   /*Find band energy range to scan*/
   wave.fermi = fermi;
-  find_energy_bounds(flog, &wave, &estp); 
+  find_energy_bounds(&wave, &estp); 
 
   /*Find nonsymmorphic Symmetry related to HKL points*/
   symmorphic_symmetry(&symm); 
   
   /*calculate the local potential energy contribution*/
-  mjhp2theta_local_potential(flog, &tth, &estp, &grid, &wave, &ucell, &bin, &econ);
+  mjhp2theta_local_potential(&tth, &estp, &grid, &wave, &ucell, &bin, &econ);
 
   /*Read psp information from *out file*/
   strcpy(ABOUTfilename, ABOfilename);
   strcat(ABOUTfilename, ".out");
-  read_PSPdata(flog, ABOUTfilename, &psp, &atom); 
+  read_PSPdata(ABOUTfilename, &psp, &atom); 
 
   /*calculate the nonlocal potential energy contribution*/
-  mjhp2theta_nonlocal_potential(flog, &tth, &estp, &wave, &psp, &ucell, &atom, &econ);
+  mjhp2theta_nonlocal_potential(&tth, &estp, &wave, &psp, &ucell, &atom, &econ);
 
   /*combine nonlocal and local potential energy*/
-  concatinate_twotheta_potential(flog, &econ, &estp, &tth); 
+  concatinate_twotheta_potential(&econ, &estp, &tth); 
   
   /*calculate the Fermi sphere angle*/
   Calculate_FermiDegree(&ucell, &fsph);
@@ -145,11 +133,11 @@ int main(int argc, char * argv[])
   /*print total potential energy contributions*/ 
   strcat(MJOUTfilename, "_2theta");
   strcat(MJOUTfilename, ".mjout");
-  fprintf(flog, "\nPrinting potential energy contributions to %s\n", MJOUTfilename);
+  printf( "\nPrinting potential energy contributions to %s\n", MJOUTfilename);
   print_mjhp2theta_energy(MJOUTfilename, &tth, &estp, &ucell, &fcab, &econ, &fsph);
 
   /*Free allocated memory not needed anymore*/
-  fprintf(flog, "\nFree Allocated Variables\n");
+  printf( "\nFree Allocated Variables\n");
   FreeMemory_Wavefunctions(&wave);
   wave.npw = FreeMemory_oneD_int(wave.npw);
   symm.symrel = FreeMemory_threeD_int(symm.symrel, 3, 3);
@@ -172,8 +160,7 @@ int main(int argc, char * argv[])
   tth.rflc_K = FreeMemory_oneD_int(tth.rflc_K);
   tth.rflc_L = FreeMemory_oneD_int(tth.rflc_L);
 
-  fprintf(flog, "\n\nEND OF FILE\n");
-  fclose(flog);
+  printf( "\n\nEND OF FILE\n");
 
   return(0);
 }

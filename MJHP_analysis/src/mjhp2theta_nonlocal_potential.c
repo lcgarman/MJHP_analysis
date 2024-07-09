@@ -12,7 +12,7 @@
 #include "psp_functions.h"
 #include "mjhp2theta_nonlocal_potential.h"
 
-void mjhp2theta_nonlocal_potential(FILE *flog, TwoTheta *TTH, EnergyStep *ESTP, Wavefunction* WFK, Pseudopotential* PSP, UnitCell* UC, AtomicVariables *ATM, EnergyContribution *ECON) 
+void mjhp2theta_nonlocal_potential(TwoTheta *TTH, EnergyStep *ESTP, Wavefunction* WFK, Pseudopotential* PSP, UnitCell* UC, AtomicVariables *ATM, EnergyContribution *ECON) 
 { /*Calculate the Nonlocal energy contribution by HKL value*/
   int nkpt;
   int nband;
@@ -150,8 +150,7 @@ void mjhp2theta_nonlocal_potential(FILE *flog, TwoTheta *TTH, EnergyStep *ESTP, 
     exit(0);
   }
 
-  printf("Calculating Nonlocal Energy for Reflections.\n");
-  fprintf(flog, "Calculating Nonlocal Energy for Reflections.\n");
+  printf( "Calculating Nonlocal Energy for Reflections.\n");
 
   for (n=0;n<nrflc;n++) {
     kx = TTH->BZkpt[n][0];  
@@ -167,7 +166,7 @@ void mjhp2theta_nonlocal_potential(FILE *flog, TwoTheta *TTH, EnergyStep *ESTP, 
     /*start looping over kpts to find matches*/
     for (kptno=0;kptno<nkpt;kptno++){ 
       if ((kx!=WFK->kpt[0][kptno])||(ky!=WFK->kpt[1][kptno])||(kz!=WFK->kpt[2][kptno])) continue;
-      fprintf(flog, "\treflection# %d\n", n);
+      printf( "\treflection# %d\n", n);
 	  npw = WFK->npw[kptno];
 
 	  /*Find |G+k| needed to calculate nonlocal Energy*/
@@ -252,9 +251,9 @@ void mjhp2theta_nonlocal_potential(FILE *flog, TwoTheta *TTH, EnergyStep *ESTP, 
 			continue;
 		  }
 		  if ((mag_pw1!=mag_pw2)) continue;
-		  fprintf(flog, "\tHKL = %d %d %d\n", delta_h, delta_k, delta_l);
-		  fprintf(flog, "\t\tpw1 = %lf %lf %lf\n", pw1_x, pw1_y, pw1_z);
-		  fprintf(flog, "\t\tpw2 = %lf %lf %lf\n", pw2_x, pw2_y, pw2_z);
+		  printf( "\tHKL = %d %d %d\n", delta_h, delta_k, delta_l);
+		  printf( "\t\tpw1 = %lf %lf %lf\n", pw1_x, pw1_y, pw1_z);
+		  printf( "\t\tpw2 = %lf %lf %lf\n", pw2_x, pw2_y, pw2_z);
 
 		  /*Finding deltat(reduced plane wave coords in cart*/
 		  Dga=ga[pw1]-ga[pw2];
@@ -402,11 +401,10 @@ void mjhp2theta_nonlocal_potential(FILE *flog, TwoTheta *TTH, EnergyStep *ESTP, 
 
 		} //end pw2 loop
 	  } //end pw1 loop
-	  fprintf(flog, "     kpt# %d\t Nonlocal Potential Energy = %lf\n", n, total_nonlocal);
+	  printf( "     kpt# %d\t Nonlocal Potential Energy = %lf\n", n, total_nonlocal);
 	} //end of kpt loop
   } //end of npxrd loop
-  printf("Total Nonlocal Potential Energy = %lf\n", total_nonlocal);
-  fprintf(flog, "Total Nonlocal Potential Energy = %lf\n", total_nonlocal);
+  printf( "Total Nonlocal Potential Energy = %lf\n", total_nonlocal);
 
   /*free allocated variables*/
   l_max_type = FreeMemory_oneD_int(l_max_type);

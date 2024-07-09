@@ -7,7 +7,7 @@
 #include "read_binary_abinit.h"
 #include "allocate_memory.h"
 
-void read_binary_abinit(FILE * flog, char filename[200], int option, UnitCell* UC, NumberGrid* GRD, Symmetry* SYM, Wavefunction* WFK, BinaryGrid* BIN, AtomicVariables* ATM) 
+void read_binary_abinit(char filename[200], int option, UnitCell* UC, NumberGrid* GRD, Symmetry* SYM, Wavefunction* WFK, BinaryGrid* BIN, AtomicVariables* ATM) 
 {
   /*Reads the Abinit Binary outbut files*/
 
@@ -102,8 +102,7 @@ void read_binary_abinit(FILE * flog, char filename[200], int option, UnitCell* U
   double occv;
   double cgv;
 
-  printf("\tReading %s\n", filename);
-  fprintf(flog, "\nReading %s\n", filename);
+  printf("\nReading %s\n", filename);
   /*Open Abinit _o_* output file*/
   fab=fopen(filename,"rb+"); /*open the binary file in read and write mode*/
   if(fab==NULL) {
@@ -194,27 +193,27 @@ void read_binary_abinit(FILE * flog, char filename[200], int option, UnitCell* U
   fread(&j, sizeof(int), 1, fab);
 
   /*allocate variables for next section of readin*/
-  fprintf(flog, "\tAllocating Memory for Header Variables:\n");
+  printf( "\tAllocating Memory for Header Variables:\n");
   WFK->npw = AllocateMemory_oneD_int(WFK->npw, nkpt);
-  fprintf(flog, "\t\tSuccess for npw (x nkpt).\n");
+  printf( "\t\tSuccess for npw (x nkpt).\n");
   SYM->symrel = AllocateMemory_threeD_int(SYM->symrel, 3, 3, nsym);
-  fprintf(flog, "\t\tSuccess for symrel (x 3 x 3 x nsym).\n");
+  printf( "\t\tSuccess for symrel (x 3 x 3 x nsym).\n");
   ATM->typat = AllocateMemory_oneD_int(ATM->typat, natom);
-  fprintf(flog, "\t\tSuccess for typat (x natom).\n");
+  printf( "\t\tSuccess for typat (x natom).\n");
   WFK->kpt = AllocateMemory_twoD_double(WFK->kpt, 3, nkpt);
-  fprintf(flog, "\t\tSuccess for kpt (x 3 x nkpt).\n");
+  printf( "\t\tSuccess for kpt (x 3 x nkpt).\n");
   SYM->tnons = AllocateMemory_twoD_double(SYM->tnons, 3, nsym);
-  fprintf(flog, "\t\tSuccess for tnons (x 3 x nsym).\n");
+  printf( "\t\tSuccess for tnons (x 3 x nsym).\n");
   znucltypat = AllocateMemory_oneD_double(znucltypat, ntypat);
-  fprintf(flog, "\t\tSuccess for znucltypat (x ntypat).\n");
+  printf( "\t\tSuccess for znucltypat (x ntypat).\n");
   ATM->atomicno = AllocateMemory_oneD_int(ATM->atomicno, natom);
-  fprintf(flog, "\t\tSuccess for atomicno (x natom).\n");
+  printf( "\t\tSuccess for atomicno (x natom).\n");
   WFK->wtk = AllocateMemory_oneD_double(WFK->wtk, nkpt);
-  fprintf(flog, "\t\tSuccess for wtk (x nkpt).\n");
+  printf( "\t\tSuccess for wtk (x nkpt).\n");
   SYM->mult = AllocateMemory_oneD_int(SYM->mult, nkpt);
-  fprintf(flog, "\t\tSuccess for mult (x nkpt).\n");
+  printf( "\t\tSuccess for mult (x nkpt).\n");
   ATM->xred = AllocateMemory_twoD_double(ATM->xred, 3, natom);
-  fprintf(flog, "\t\tSuccess for xred (x 3 x natom).\n");
+  printf( "\t\tSuccess for xred (x 3 x natom).\n");
   /*end of allocation*/
 
   //Third Block
@@ -361,9 +360,9 @@ if(npwv>max_npw) max_npw = npwv;
 
   /*Option=1 => Read in Binary POT/DEN info*/
   else if (option == 1) {
-	fprintf(flog, " \tAllocating Memory for Binary Grid\n");
+	printf( " \tAllocating Memory for Binary Grid\n");
     BIN->real_grid = AllocateMemory_threeD_double(BIN->real_grid, NGX, NGY, NGZ);
-    fprintf(flog, "\t\tSuccess for real potential grid (NGX x NGY x NGZ).\n");
+    printf( "\t\tSuccess for real potential grid (NGX x NGY x NGZ).\n");
     /*Begin reading in binary grid in real space*/
     fread(&j, sizeof(int), 1, fab);
     for(jz=0;jz<NGZ;jz++) {
@@ -395,20 +394,20 @@ if(npwv>max_npw) max_npw = npwv;
 	  }
 	}
 	/*End of reading in and manipulating Binary Real space real_grid*/
-    fprintf(flog, "Finished reading %s.\n", filename);
+    printf( "Finished reading %s.\n", filename);
   } //END of if option==1
 
   /*if option!=1 => Read in WFK file*/
   else {
 
 	/*Allocate Memory for wavefunction variables*/
-    fprintf(flog, "\tAllocating Memory for Wavefunction Variables:\n");
+    printf( "\tAllocating Memory for Wavefunction Variables:\n");
     WFK->eigen = AllocateMemory_twoD_double(WFK->eigen, nkpt, WFK->nband);
-    fprintf(flog, "\t\tSuccess for eigen (nkpt x nband).\n");
+    printf( "\t\tSuccess for eigen (nkpt x nband).\n");
     WFK->occ = AllocateMemory_twoD_double(WFK->occ, nkpt, WFK->nband);
-    fprintf(flog, "\t\tSuccess for occ (nkpt, nband).\n");
+    printf( "\t\tSuccess for occ (nkpt, nband).\n");
     AllocateMemory_Wavefunctions(WFK);
-    fprintf(flog, "\t\tSuccess for cg and kg.\n");
+    printf( "\t\tSuccess for cg and kg.\n");
     
 	//Being reading WFK info
     for (k=0;k<nsppol;k++) {
@@ -458,7 +457,7 @@ if(npwv>max_npw) max_npw = npwv;
 
 	/*END of reading in WFK file*/
   fclose(fab);
-  fprintf(flog, "Finished reading %s.\n", filename);
+  printf( "Finished reading %s.\n", filename);
   } //END of else stmt for WFK files
   fflush(stdout);
 

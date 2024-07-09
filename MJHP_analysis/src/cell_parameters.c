@@ -7,14 +7,14 @@
 #include "allocate_memory.h"
 #include "cell_parameters.h"
 
-void Determine_CellParameters(FILE * flog, UnitCell* UC, NumberGrid* GRD) 
+void Determine_CellParameters(UnitCell* UC, NumberGrid* GRD) 
 {  
   /*Calculates real and reciprocal space latt params*/
-  fprintf(flog, "\n Cell Parameters:\n");
-  fprintf(flog, "Real Space Lattice Parameters (bohr): \n");
-  fprintf(flog, "a = %lf\t%lf\t%lf\n", UC->bohr_ax, UC->bohr_ay, UC->bohr_az);
-  fprintf(flog, "b = %lf\t%lf\t%lf\n", UC->bohr_bx, UC->bohr_by, UC->bohr_bz);
-  fprintf(flog, "c = %lf\t%lf\t%lf\n", UC->bohr_cx, UC->bohr_cy, UC->bohr_cz);
+  printf( "\n Cell Parameters:\n");
+  printf( "Real Space Lattice Parameters (bohr): \n");
+  printf( "a = %lf\t%lf\t%lf\n", UC->bohr_ax, UC->bohr_ay, UC->bohr_az);
+  printf( "b = %lf\t%lf\t%lf\n", UC->bohr_bx, UC->bohr_by, UC->bohr_bz);
+  printf( "c = %lf\t%lf\t%lf\n", UC->bohr_cx, UC->bohr_cy, UC->bohr_cz);
   
   /*Determine cell volume in bohr^3 using primitive vectors*/  
   UC->bohr_cellV = UC->bohr_ax*(UC->bohr_by*UC->bohr_cz-UC->bohr_bz*UC->bohr_cy)-\
@@ -51,10 +51,10 @@ void Determine_CellParameters(FILE * flog, UnitCell* UC, NumberGrid* GRD)
   UC->ang_cx=UC->bohr_cx*BOHRTOANG;
   UC->ang_cy=UC->bohr_cy*BOHRTOANG;
   UC->ang_cz=UC->bohr_cz*BOHRTOANG;
-  fprintf(flog, "Real Space lattice parameters in ang =\n");
-  fprintf(flog, "a = %lf\t%lf\t%lf\n", UC->ang_ax, UC->ang_ay, UC->ang_az);
-  fprintf(flog, "b = %lf\t%lf\t%lf\n", UC->ang_bx, UC->ang_by, UC->ang_bz);
-  fprintf(flog, "c = %lf\t%lf\t%lf\n", UC->ang_cx, UC->ang_cy, UC->ang_cz);
+  printf( "Real Space lattice parameters in ang =\n");
+  printf( "a = %lf\t%lf\t%lf\n", UC->ang_ax, UC->ang_ay, UC->ang_az);
+  printf( "b = %lf\t%lf\t%lf\n", UC->ang_bx, UC->ang_by, UC->ang_bz);
+  printf( "c = %lf\t%lf\t%lf\n", UC->ang_cx, UC->ang_cy, UC->ang_cz);
 
   /*Determine unit cell volume in angstroms*/
   UC->ang_cellV = UC->ang_ax*(UC->ang_by*UC->ang_cz-UC->ang_cy*UC->ang_bz)-\
@@ -71,10 +71,10 @@ void Determine_CellParameters(FILE * flog, UnitCell* UC, NumberGrid* GRD)
   UC->ang_cx_star = (2*PI)*(UC->ang_ay*UC->ang_bz-UC->ang_by*UC->ang_az)/UC->ang_cellV;
   UC->ang_cy_star = -(2*PI)*(UC->ang_ax*UC->ang_bz-UC->ang_bx*UC->ang_az)/UC->ang_cellV;
   UC->ang_cz_star = (2*PI)*(UC->ang_ax*UC->ang_by-UC->ang_ay*UC->ang_bx)/UC->ang_cellV;
-  fprintf(flog, "Reciprocal lattice parameters in ang^-1 =\n");
-  fprintf(flog, "a* = %lf\t%lf\t%lf\n", UC->ang_ax_star, UC->ang_ay_star, UC->ang_az_star);
-  fprintf(flog, "b* = %lf\t%lf\t%lf\n", UC->ang_bx_star, UC->ang_by_star, UC->ang_bz_star);
-  fprintf(flog, "c* = %lf\t%lf\t%lf\n", UC->ang_cx_star, UC->ang_cy_star, UC->ang_cz_star);
+  printf( "Reciprocal lattice parameters in ang^-1 =\n");
+  printf( "a* = %lf\t%lf\t%lf\n", UC->ang_ax_star, UC->ang_ay_star, UC->ang_az_star);
+  printf( "b* = %lf\t%lf\t%lf\n", UC->ang_bx_star, UC->ang_by_star, UC->ang_bz_star);
+  printf( "c* = %lf\t%lf\t%lf\n", UC->ang_cx_star, UC->ang_cy_star, UC->ang_cz_star);
 	
 }  //END of Determine_CellParameters Function
 

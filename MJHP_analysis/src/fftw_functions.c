@@ -11,7 +11,7 @@
 #include "allocate_memory.h"
 #include "fftw_functions.h"
 
-void FFTon_RealGrid(FILE * flog, BinaryGrid* BIN, NumberGrid* GRD, UnitCell* UC)
+void FFTon_RealGrid( BinaryGrid* BIN, NumberGrid* GRD, UnitCell* UC)
 {
   int ngfftx, ngffty, ngfftz;
   int NGX, NGY, NGZ;
@@ -28,7 +28,6 @@ void FFTon_RealGrid(FILE * flog, BinaryGrid* BIN, NumberGrid* GRD, UnitCell* UC)
   double im_rec_grid;
 
   printf("\tFFT from Direct Space to Reciprocal Space\n");
-  fprintf(flog, "\nFFT from Direct Space to Reciprocal Space\n");
   ngfftx = GRD->ngfftx;
   ngffty = GRD->ngffty;
   ngfftz = GRD->ngfftz;
@@ -74,7 +73,7 @@ void FFTon_RealGrid(FILE * flog, BinaryGrid* BIN, NumberGrid* GRD, UnitCell* UC)
 	  }
 	}
   }
-  fprintf(flog, "000 in Reciprocal space after FFT = %lf\n", c_ooo);
+  printf( "000 in Reciprocal space after FFT = %lf\n", c_ooo);
 
   /*Freeing memory used in FFT*/
   fftw_destroy_plan(grid_plan);

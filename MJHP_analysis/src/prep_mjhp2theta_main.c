@@ -87,10 +87,10 @@ printf("working\n");
   /*Read Potential file*/
   strcpy(DENfilename, ABOfilename);
   strcat(DENfilename, "_i_DEN");
-  read_binary_abinit(flog, DENfilename, 1, &ucell, &grid, &symm, &wave, &bin, &atom);
+  read_binary_abinit(DENfilename, 1, &ucell, &grid, &symm, &wave, &bin, &atom);
 
   /*Find Unit Cell parameters in real and reciprocal space*/
-  Determine_CellParameters(flog, &ucell, &grid);
+  Determine_CellParameters(&ucell, &grid);
 
   /*Find nonsymmorphic Symmetry */
   symmorphic_symmetry(&symm); 
@@ -100,7 +100,7 @@ printf("working\n");
   prepare_HKLgrid(&grid);
   
   /*Perform FFT on Real space potential grid*/
-  FFTon_RealGrid(flog, &bin, &grid, &ucell);
+  FFTon_RealGrid(&bin, &grid, &ucell);
 
   /*calculate the simulated powder pattern*/
   calculate_powder_pattern(flog, &tth, &bin, &grid, &ucell, &symm); 
@@ -119,7 +119,7 @@ printf("working\n");
   rename(MABINfilename, ABINfilename);
 
   /*Free allocated memory not needed anymore*/
-  fprintf(flog, "\nFree Allocated Variables\n");
+  printf( "\nFree Allocated Variables\n");
   symm.symrel = FreeMemory_threeD_int(symm.symrel, 3, 3);
   atom.typat = FreeMemory_oneD_int(atom.typat);
   wave.kpt = FreeMemory_twoD_double(wave.kpt, 3);

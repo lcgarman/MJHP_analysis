@@ -12,7 +12,7 @@
 #include "psp_functions.h"
 #include "mjhpHKL_nonlocal_potential.h"
 
-void mjhpHKL_nonlocal_potential(FILE * flog, VectorIndices *VECT, NumberGrid* GRD, EnergyStep* ESTP, Wavefunction* WFK, Pseudopotential* PSP, UnitCell* UC, AtomicVariables* ATM, EnergyContribution *ECON)
+void mjhpHKL_nonlocal_potential(VectorIndices *VECT, NumberGrid* GRD, EnergyStep* ESTP, Wavefunction* WFK, Pseudopotential* PSP, UnitCell* UC, AtomicVariables* ATM, EnergyContribution *ECON)
 { 
   int j;
   int nkpt, kptno;
@@ -164,7 +164,7 @@ void mjhpHKL_nonlocal_potential(FILE * flog, VectorIndices *VECT, NumberGrid* GR
   printf("\nCalculating Nonlocal Potential Energy \n");
   /*begin calculating nonlocal energy for HKL*/
   for (kptno=0;kptno<nkpt;kptno++){ 
-    fprintf(flog, "kpt %d \t%lf %lf %lf\n", kptno, WFK->kpt[0][kptno], WFK->kpt[1][kptno], WFK->kpt[2][kptno]);
+    printf( "kpt %d \t%lf %lf %lf\n", kptno, WFK->kpt[0][kptno], WFK->kpt[1][kptno], WFK->kpt[2][kptno]);
 	npw = WFK->npw[kptno];
 
 	/*Find |G+k| needed to calculate kinetic Energy*/
@@ -269,9 +269,9 @@ void mjhpHKL_nonlocal_potential(FILE * flog, VectorIndices *VECT, NumberGrid* GR
         }
         /*if no match is found then go to next pw2*/
         if (hkl_match == 0) continue;
-        fprintf(flog, "\t H K L = %d %d %d\n", H_match, K_match, L_match);
-        fprintf(flog, "\t\t pw1 = %lf %lf %lf |pw1|=%lf\n", pw1_x, pw1_y, pw1_z, mag_pw1);
-        fprintf(flog, "\t\t pw2 = %lf %lf %lf |pw2|=%lf\n", pw2_x, pw2_y, pw2_z, mag_pw2);
+        printf( "\t H K L = %d %d %d\n", H_match, K_match, L_match);
+        printf( "\t\t pw1 = %lf %lf %lf |pw1|=%lf\n", pw1_x, pw1_y, pw1_z, mag_pw1);
+        printf( "\t\t pw2 = %lf %lf %lf |pw2|=%lf\n", pw2_x, pw2_y, pw2_z, mag_pw2);
         /*make delta_h positive*/
 		if (delta_h < 0) delta_h+=ngfftx;
 		if (delta_k < 0) delta_k+=ngffty;
@@ -281,7 +281,7 @@ void mjhpHKL_nonlocal_potential(FILE * flog, VectorIndices *VECT, NumberGrid* GR
         mag_diff = mag_pw1 - mag_pw2;
         exponent = -(mag_diff*mag_diff)/sigma;
         broad = exp(exponent);
-        fprintf(flog, "\t\tbroadening = %lf\n", broad);
+        printf( "\t\tbroadening = %lf\n", broad);
 
 		/*Finding delta(reduced plane wave coords in cart*/
 		Dga=ga[pw1]-ga[pw2];
@@ -431,10 +431,10 @@ void mjhpHKL_nonlocal_potential(FILE * flog, VectorIndices *VECT, NumberGrid* GR
 
 	  } //end pw2 loop
 	} //end pw1 loop
-	fprintf(flog, "   kpt %d\t nonlocal potential energy = %lf\n", kptno, total_nonlocal);
+	printf( "   kpt %d\t nonlocal potential energy = %lf\n", kptno, total_nonlocal);
   } //end of kpt loop
   printf("\tTotal Nonlocal Energy = %lf\n", total_nonlocal);
-  fprintf(flog, "Total Nonlocal Energy = %lf\n", total_nonlocal);
+  printf( "Total Nonlocal Energy = %lf\n", total_nonlocal);
 
   /*free allocated variables*/
   l_max_type = FreeMemory_oneD_int(l_max_type);

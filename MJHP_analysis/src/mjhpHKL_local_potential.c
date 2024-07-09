@@ -10,7 +10,7 @@
 #include "allocate_memory.h"
 #include "mjhpHKL_local_potential.h"
 
-void mjhpHKL_local_potential(FILE * flog, VectorIndices *VECT, NumberGrid *GRD, EnergyStep *ESTP, Wavefunction *WFK, UnitCell *UC, BinaryGrid *BIN, EnergyContribution *ECON)
+void mjhpHKL_local_potential(VectorIndices *VECT, NumberGrid *GRD, EnergyStep *ESTP, Wavefunction *WFK, UnitCell *UC, BinaryGrid *BIN, EnergyContribution *ECON)
 { 
   int nkpt;
   int kptno;
@@ -73,11 +73,10 @@ void mjhpHKL_local_potential(FILE * flog, VectorIndices *VECT, NumberGrid *GRD, 
   /*Allocate memory for variables in this function*/
   ECON->local = AllocateMemory_oneD_double(ECON->local, nEstep);
 
-  fprintf(flog, "\nCalculating Local Potential Energy:\n");
-  printf("Calculating Local Potential Energy\n");
+  printf( "\nCalculating Local Potential Energy:\n");
   /*NOW start Calculating Potential Energy contribution for each kpt*/
   for (kptno=0;kptno<nkpt;kptno++){ 
-    fprintf(flog, "kpt %d \t%lf %lf %lf\n", kptno, WFK->kpt[0][kptno], WFK->kpt[1][kptno], WFK->kpt[2][kptno]);
+    printf( "kpt %d \t%lf %lf %lf\n", kptno, WFK->kpt[0][kptno], WFK->kpt[1][kptno], WFK->kpt[2][kptno]);
 	npw = WFK->npw[kptno];
 
     /*loop over first planewaves in pair*/
@@ -132,9 +131,9 @@ void mjhpHKL_local_potential(FILE * flog, VectorIndices *VECT, NumberGrid *GRD, 
         if (hkl_match == 0) continue;
          
         /*print out pw matches and coordinates*/
-        fprintf(flog, "\t H K L = %d %d %d\n", H_match, K_match, L_match);
-        fprintf(flog, "\t\t pw1 = %lf %lf %lf |pw1|=%lf\n", pw1_x, pw1_y, pw1_z, mag_pw1);
-        fprintf(flog, "\t\t pw2 = %lf %lf %lf |pw2|=%lf\n", pw2_x, pw2_y, pw2_z, mag_pw2);
+        printf( "\t H K L = %d %d %d\n", H_match, K_match, L_match);
+        printf( "\t\t pw1 = %lf %lf %lf |pw1|=%lf\n", pw1_x, pw1_y, pw1_z, mag_pw1);
+        printf( "\t\t pw2 = %lf %lf %lf |pw2|=%lf\n", pw2_x, pw2_y, pw2_z, mag_pw2);
  
         /*make delta_h positive*/
 		if (delta_h < 0) delta_h+=ngfftx;
@@ -145,7 +144,7 @@ void mjhpHKL_local_potential(FILE * flog, VectorIndices *VECT, NumberGrid *GRD, 
         mag_diff = mag_pw1 - mag_pw2;
         exponent = -(mag_diff*mag_diff)/sigma;
         broad = exp(exponent);
-        fprintf(flog, "\t\tbroadening = %lf\n", broad);
+        printf( "\t\tbroadening = %lf\n", broad);
 
 		/*loop over bands to find wavefunction coeff and dE*/
 		for(band=0;band<nband;band++) {
@@ -180,10 +179,10 @@ void mjhpHKL_local_potential(FILE * flog, VectorIndices *VECT, NumberGrid *GRD, 
 		} /*END band->nband loop*/
 	  } /*END pw2->npw loop*/
 	} /*END pw1->npw loop*/
-	fprintf(flog, "   kpt %d\t local potential energy = %lf\n", kptno, total_local);
+	printf( "   kpt %d\t local potential energy = %lf\n", kptno, total_local);
   } /*END: kpt loop*/
   printf("\tTotal Potential Energy = %lf\n", total_local);
-  fprintf(flog, "Total Potential Energy = %lf\n", total_local);
+  printf( "Total Potential Energy = %lf\n", total_local);
 
 
 }   //END of mjhp_hkl_localpot function

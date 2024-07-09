@@ -10,7 +10,7 @@
 #include "allocate_memory.h"
 #include "mjhp2theta_local_potential.h"
 
-void mjhp2theta_local_potential(FILE *flog, TwoTheta *TTH, EnergyStep *ESTP, NumberGrid *GRD, Wavefunction *WFK, UnitCell *UC, BinaryGrid *BIN, EnergyContribution *ECON)
+void mjhp2theta_local_potential(TwoTheta *TTH, EnergyStep *ESTP, NumberGrid *GRD, Wavefunction *WFK, UnitCell *UC, BinaryGrid *BIN, EnergyContribution *ECON)
 { /*Calculate the kinetic energy contribution by HKL value*/
   int nkpt;
   int kptno;
@@ -69,8 +69,7 @@ void mjhp2theta_local_potential(FILE *flog, TwoTheta *TTH, EnergyStep *ESTP, Num
   }
   total_local = 0.0;
   
-  printf("Calculating Local Potential Energy.\n");
-  fprintf(flog, "\nCalculating Local Potential Energy:\n");
+  printf( "\nCalculating Local Potential Energy:\n");
   /*Enter loop of  reflections*/
   for (n=0;n<nrflc;n++) {
     kx = TTH->BZkpt[n][0];  
@@ -86,7 +85,7 @@ void mjhp2theta_local_potential(FILE *flog, TwoTheta *TTH, EnergyStep *ESTP, Num
 	/*NOW start Calculating local potential  Energy contribution*/
 	for (kptno=0;kptno<nkpt;kptno++){ 
 	  if ((kx!=WFK->kpt[0][kptno])||(ky!=WFK->kpt[1][kptno])||(kz!=WFK->kpt[2][kptno])) continue;
-	  fprintf(flog, "\treflection# %d\n", n);
+	  printf( "\treflection# %d\n", n);
 	  npw = WFK->npw[kptno];
       /*loop over first planewave in pair*/
 	  for(pw1=0;pw1<npw;pw1++) {
@@ -116,9 +115,9 @@ void mjhp2theta_local_potential(FILE *flog, TwoTheta *TTH, EnergyStep *ESTP, Num
 			continue;
 		  }
 		  if ((mag_pw1!=mag_pw2)) continue;
-		  fprintf(flog, "\tHKL = %d %d %d\n", delta_h, delta_k, delta_l);
-		  fprintf(flog, "\t\tpw1 = %lf %lf %lf\n", pw1_x, pw1_y, pw1_z);
-		  fprintf(flog, "\t\tpw2 = %lf %lf %lf\n", pw2_x, pw2_y, pw2_z);
+		  printf( "\tHKL = %d %d %d\n", delta_h, delta_k, delta_l);
+		  printf( "\t\tpw1 = %lf %lf %lf\n", pw1_x, pw1_y, pw1_z);
+		  printf( "\t\tpw2 = %lf %lf %lf\n", pw2_x, pw2_y, pw2_z);
 		  if (delta_h < 0) delta_h+=ngfftx;
 		  if (delta_k < 0) delta_k+=ngffty;
 		  if (delta_l < 0) delta_l+=ngfftz;
@@ -154,12 +153,11 @@ void mjhp2theta_local_potential(FILE *flog, TwoTheta *TTH, EnergyStep *ESTP, Num
 		  } /*END band->nband loop*/
 	    } /*END pw2->npw loop*/
 	  } /*END pw1->npw loop*/
-	  fprintf(flog, "    kpt# %d\tLocal Potential Energy = %lf\n", n, total_local);
+	  printf( "    kpt# %d\tLocal Potential Energy = %lf\n", n, total_local);
 	} /*END: kpt loop*/
   } /*END: npxrd loop*/
 
-  printf("Total Local Potential Energy = %lf\n", total_local);
-  fprintf(flog, "Total Local Potential Energy = %lf\n", total_local);
+  printf( "Total Local Potential Energy = %lf\n", total_local);
 
   /*free allocated variables*/
   BIN->rec_grid = FreeMemory_threeD_complex(BIN->rec_grid, ngfftx, ngffty);

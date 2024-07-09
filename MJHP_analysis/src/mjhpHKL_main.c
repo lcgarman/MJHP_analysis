@@ -22,11 +22,9 @@ int main(int argc, char * argv[])
 {
 
   /*declaring filenames*/
-  FILE* flog;
   char MJINfilename [200];
   char MJOUTfilename_N [200];
   char MJOUTfilename [200];
-  char MJLOGfilename [200];
   char ABOfilename [200];
   char ABOUTfilename [200];
   char POTfilename [200];
@@ -34,7 +32,6 @@ int main(int argc, char * argv[])
   char H_append [10];
   char K_append [10];
   char L_append [10];
-  char ndts_append [10];
   int H_conventional, K_conventional, L_conventional;
   int n;
   int ndts;
@@ -77,53 +74,42 @@ int main(int argc, char * argv[])
   read_mjin_header(MJINfilename, &mjc, &fcab, &fsph);
   ndts = mjc.ndts;
 
-  /*open log file and print header*/
-  strcpy(MJLOGfilename, fcab.MJOUTfilename);
-  strcat(MJLOGfilename, "_");
-  sprintf(ndts_append, "%d", ndts);
-  strcat(MJLOGfilename, "HKL");
-  strcat(MJLOGfilename, ".mjlog");
-  flog = fopen(MJLOGfilename, "w");
-  if(flog==NULL) {
-    printf("%s not found. \n", MJLOGfilename);
-    exit(0);
-  }  
   /*store file names*/
   strcpy(ABOfilename, fcab.ABOfilename);
   strcpy(MJOUTfilename, fcab.MJOUTfilename);
-  fprintf(flog, "mjin: %s\n", ABOfilename);
-  fprintf(flog, "mjout: %s\n", MJOUTfilename);
-  fprintf(flog, "\n Number of HKL: %d\n", ndts);
+  printf("mjin: %s\n", ABOfilename);
+  printf("mjout: %s\n", MJOUTfilename);
+  printf("\n Number of HKL: %d\n", ndts);
   for(n=0;n<ndts;n++) {
-    fprintf(flog, "DTSET %d\t HKL = %d %d %d\n", n+1, mjc.jzH[n], mjc.jzK[n], mjc.jzL[n]);
+    printf("DTSET %d\t HKL = %d %d %d\n", n+1, mjc.jzH[n], mjc.jzK[n], mjc.jzL[n]);
   }
-  fprintf(flog, "\nBegin Reading Files...\n");
+  printf("\nBegin Reading Files...\n");
 
   /*Read Potential file*/
   strcpy(POTfilename, ABOfilename);
   strcat(POTfilename, "_o_POT");
-  read_binary_abinit(flog, POTfilename, 1, &ucell, &grid, &symm, &wave, &bin, &atom);
+  read_binary_abinit(POTfilename, 1, &ucell, &grid, &symm, &wave, &bin, &atom);
 
   /*Find Unit Cell parameters in real and reciprocal space*/
-  Determine_CellParameters(flog, &ucell, &grid);
+  Determine_CellParameters(&ucell, &grid);
   symmorphic_symmetry(&symm); 
   
   /*Perform FFT on Real space potential grid*/
-  FFTon_RealGrid(flog, &bin, &grid, &ucell);
+  FFTon_RealGrid(&bin, &grid, &ucell);
   bin.cc_rec_grid= FreeMemory_threeD_complex(bin.cc_rec_grid, grid.ngfftx, grid.ngffty);
 
   /*Read Wavefunction file*/
   strcpy(WFKfilename, ABOfilename);
   strcat(WFKfilename, "_o_WFK");
-  read_binary_abinit(flog, WFKfilename, 0, &ucell, &grid, &symm, &wave, &bin, &atom); 
+  read_binary_abinit(WFKfilename, 0, &ucell, &grid, &symm, &wave, &bin, &atom); 
 
   /*Find band energy range to scan*/
-  find_energy_bounds(flog, &wave, &estp); 
+  find_energy_bounds(&wave, &estp); 
 
   /*Read psp information from *out file*/
   strcpy(ABOUTfilename, ABOfilename);
   strcat(ABOUTfilename, ".out");
-  read_PSPdata(flog, ABOUTfilename, &psp, &atom); 
+  read_PSPdata(ABOUTfilename, &psp, &atom); 
   /*end of reading in info*/
 
   /*being calcing potential for HKL sets*/
@@ -135,8 +121,7 @@ int main(int argc, char * argv[])
   	H_conventional = mjc.nH; 
   	K_conventional = mjc.nK; 
   	L_conventional = mjc.nL; 
-    fprintf(flog, "\nDTSET %d\t HKL = %d %d %d\n", n+1, mjc.nH, mjc.nK, mjc.nL);
-    printf("\n\nDTSET %d\t HKL = %d %d %d\n", n+1, mjc.nH, mjc.nK, mjc.nL);
+    printf( "\nDTSET %d\t HKL = %d %d %d\n", n+1, mjc.nH, mjc.nK, mjc.nL);
 
 	/*transfrom HKL to primitive centering*/
 	transform_HKL(&mjc); 
@@ -145,26 +130,26 @@ int main(int argc, char * argv[])
 	vect.K = mjc.nK;
 	vect.L = mjc.nL;
 	printf("H=%d K=%d L=%d (%d %d %d)\n", vect.H, vect.K, vect.L, H_conventional, K_conventional, L_conventional); 
-	fprintf(flog, "\nHKL conventional: %d %d %d\n", H_conventional, K_conventional, L_conventional);
-	fprintf(flog, "HKL primitive: %d %d %d\n", vect.H, vect.K, vect.L); 
+	printf( "\nHKL conventional: %d %d %d\n", H_conventional, K_conventional, L_conventional);
+	printf( "HKL primitive: %d %d %d\n", vect.H, vect.K, vect.L); 
 	
 	/*Find nonsymmorphic Symmetry related to HKL points*/
-	find_symmetric_hkl(flog, &vect, &symm, &grid); 
+	find_symmetric_hkl(&vect, &symm, &grid); 
 	
 	/*find the shell in reciprocal space to include potential energy contributions*/
-	find_MJregion(flog, &vect, &ucell);
+	find_MJregion(&vect, &ucell);
 	
 	/*calculate the local potential energy contribution*/
-	mjhpHKL_local_potential(flog, &vect, &grid, &estp, &wave, &ucell, &bin, &econ);
+	mjhpHKL_local_potential(&vect, &grid, &estp, &wave, &ucell, &bin, &econ);
 	
     /*calculate the nonlocal potential energy contribution*/
-	mjhpHKL_nonlocal_potential(flog, &vect, &grid, &estp, &wave, &psp, &ucell, &atom, &econ);
+	mjhpHKL_nonlocal_potential(&vect, &grid, &estp, &wave, &psp, &ucell, &atom, &econ);
 
 	/*combine nonlocal and local potential energy*/
-	concatinate_HKL_potential(flog, &econ, &estp);
+	concatinate_HKL_potential(&econ, &estp);
 
 	/*Integrate the total potential energy up to Ef*/
-	integrate_HKL_potential(flog, &econ, &estp, &atom);
+	integrate_HKL_potential(&econ, &estp, &atom);
 	
 	/*print total potential energy contributions*/ 
 	sprintf(H_append, "%d", H_conventional);
@@ -176,7 +161,7 @@ int main(int argc, char * argv[])
 	strcat(MJOUTfilename_N, K_append);
 	strcat(MJOUTfilename_N, L_append);
 	strcat(MJOUTfilename_N, ".mjout");
-	fprintf(flog, "\nPrinting potential energy contributions to %s\n", MJOUTfilename_N);
+	printf( "\nPrinting potential energy contributions to %s\n", MJOUTfilename_N);
 	print_mjhpHKL_energy(MJOUTfilename_N, &vect, &estp, &ucell, &fcab, &econ);
  
 	/*free HKL variables for next iteration*/
@@ -190,7 +175,7 @@ int main(int argc, char * argv[])
 
 
   /*Free allocated memory not needed anymore*/
-  fprintf(flog, "\nFree Allocated Variables\n");
+  printf( "\nFree Allocated Variables\n");
   FreeMemory_Wavefunctions(&wave);
   bin.rec_grid = FreeMemory_threeD_complex(bin.rec_grid, grid.ngfftx, grid.ngffty);
   FreeMemory_PSPvariables(&psp);
@@ -208,8 +193,7 @@ int main(int argc, char * argv[])
   mjc.jzK = FreeMemory_oneD_int(mjc.jzK);
   mjc.jzL = FreeMemory_oneD_int(mjc.jzL);
 
-  fprintf(flog, "\n\nEND OF FILE\n");
-  fclose(flog);
+  printf( "\n\nEND OF FILE\n");
 
   return(0);
 }

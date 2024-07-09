@@ -5,6 +5,6 @@
 
   double projp(int l ,int i ,double g1, Pseudopotential* PSP, int typat, double cellvolume);
 
-  void read_PSPdata(FILE * flog, char filename[100], Pseudopotential* PSP, AtomicVariables * ATM);
+  void read_PSPdata(char filename[100], Pseudopotential* PSP, AtomicVariables * ATM);
 
 #endif

@@ -5,7 +5,7 @@
 #include "globals.h"
 #include "structures.h"
 
-void find_energy_bounds(FILE * flog, Wavefunction * WFK, EnergyStep * ESTP) 
+void find_energy_bounds(Wavefunction * WFK, EnergyStep * ESTP) 
 {
   int k;
   int n;
@@ -22,8 +22,8 @@ void find_energy_bounds(FILE * flog, Wavefunction * WFK, EnergyStep * ESTP)
   nband = WFK->nband;
   fermi = WFK->fermi;
 
-  fprintf(flog, "\nFinding Energy Range to Scan.\n");
-  fprintf(flog, "\tnkpt=%d\tnband=%d\tfermi=%lf\n", nkpt, nband, fermi);
+  printf( "\nFinding Energy Range to Scan.\n");
+  printf( "\tnkpt=%d\tnband=%d\tfermi=%lf\n", nkpt, nband, fermi);
   /*find the minimum and maximum band energy*/
   bandE_min_Ha = 0.0;
   bandE_max_Ha = 0.0;
@@ -49,8 +49,8 @@ void find_energy_bounds(FILE * flog, Wavefunction * WFK, EnergyStep * ESTP)
 
   /*find the number of step from Elow to Ehigh using Energy mesh of 100*/
   ESTP->nEstep = (EMESH*bandE_max_integer)-(EMESH*bandE_min_integer)+1;
-  fprintf(flog, "\tScanning Energy Range: %d eV to %d eV (%d steps)\n", bandE_min_integer, bandE_max_integer, ESTP->nEstep);
-  fprintf(flog, "\tdE Step Corresponding to 0 eV (E_F) = %d\n", ESTP->dE_zero);
+  printf( "\tScanning Energy Range: %d eV to %d eV (%d steps)\n", bandE_min_integer, bandE_max_integer, ESTP->nEstep);
+  printf( "\tdE Step Corresponding to 0 eV (E_F) = %d\n", ESTP->dE_zero);
  
 } //END of find_energy_bounds function
   

@@ -66,7 +66,7 @@ double projp(int l ,int i ,double g1, Pseudopotential* PSP, int typat, double ce
   return(p);
 }
 
-void read_PSPdata(FILE * flog, char filename[100], Pseudopotential* PSP, AtomicVariables * ATM)
+void read_PSPdata(char filename[100], Pseudopotential* PSP, AtomicVariables * ATM)
 {
   FILE* faout;
   int stop;
@@ -88,8 +88,7 @@ void read_PSPdata(FILE * flog, char filename[100], Pseudopotential* PSP, AtomicV
   
   ntypat = ATM->ntypat;
 
-  fprintf(flog, "\nReading %s for PSP data\n", filename);
-  printf("\tReading %s for PSP data\n", filename);
+  printf( "\nReading %s for PSP data\n", filename);
   /*open abinit *.out file in read mode*/
   faout = fopen(filename, "r");
   if(faout==NULL) {
@@ -244,7 +243,7 @@ void read_PSPdata(FILE * flog, char filename[100], Pseudopotential* PSP, AtomicV
 	} //END search for pspini
   } //END while (stop==0) loop
 
-  fprintf(flog, "Number of Atom Types = %d\n", ntypat);
+  printf( "Number of Atom Types = %d\n", ntypat);
   ATM->ntypat = ntypat;
      /*Now define symmetric off diagnol elements in h*/
   for (typat=0;typat<ntypat;typat++) {
@@ -267,17 +266,17 @@ void read_PSPdata(FILE * flog, char filename[100], Pseudopotential* PSP, AtomicV
 	PSP->h[1][2][2][typat] = (-0.5)*(18.0/pow(143.0,0.5))*PSP->h[2][2][2][typat]; 
 	PSP->h[2][1][2][typat] = PSP->h[1][2][2][typat];
 	
-	fprintf(flog, "Pseudopotential for atomtype # %d\n", typat);
-	fprintf(flog, "   rloc= %lf \n",PSP->rloc[typat]);
-	fprintf(flog, "   cc1 = %lf; cc2 = %lf; cc3 = %lf; cc4 = %lf \n",PSP->cc1[typat],PSP->cc2[typat],PSP->cc3[typat],PSP->cc4[typat]);
-	fprintf(flog, "   rrs = %lf; h11s= %lf; h22s= %lf; h33s= %lf \n",PSP->rrs[typat],PSP->h[0][0][0][typat],PSP->h[1][1][0][typat],PSP->h[2][2][0][typat]);
-	fprintf(flog, "   rrp = %lf; h11p= %lf; h22p= %lf; h33p= %lf \n",PSP->rrp[typat],PSP->h[0][0][1][typat],PSP->h[1][1][1][typat],PSP->h[2][2][1][typat]);
-	fprintf(flog, "   rrp = %lf; k11p= %lf; k22p= %lf; k33p= %lf \n",PSP->rrp[typat],PSP->k11p[typat],PSP->k22p[typat],PSP->k33p[typat]);
-	fprintf(flog, "   rrd = %lf; h11d= %lf; h22d= %lf; h33d= %lf \n",PSP->rrd[typat],PSP->h[0][0][2][typat],PSP->h[1][1][2][typat],PSP->h[2][2][2][typat]);
-	fprintf(flog, "   rrd = %lf; k11d= %lf; k22d= %lf; k33d= %lf \n",PSP->rrd[typat],PSP->k11d[typat],PSP->k22d[typat],PSP->k33d[typat]);
-	fprintf(flog, "   rrf = %lf; h11f= %lf; h22f= %lf; h33f= %lf \n",PSP->rrf[typat],PSP->h[0][0][3][typat],PSP->h[1][1][3][typat],PSP->h[2][2][3][typat]);
-	fprintf(flog, "   rrf = %lf; k11f= %lf; k22f= %lf; k33f= %lf \n",PSP->rrf[typat],PSP->k11f[typat],PSP->k22f[typat],PSP->k33f[typat]);
-	fprintf(flog, "\n");
+	printf( "Pseudopotential for atomtype # %d\n", typat);
+	printf( "   rloc= %lf \n",PSP->rloc[typat]);
+	printf( "   cc1 = %lf; cc2 = %lf; cc3 = %lf; cc4 = %lf \n",PSP->cc1[typat],PSP->cc2[typat],PSP->cc3[typat],PSP->cc4[typat]);
+	printf( "   rrs = %lf; h11s= %lf; h22s= %lf; h33s= %lf \n",PSP->rrs[typat],PSP->h[0][0][0][typat],PSP->h[1][1][0][typat],PSP->h[2][2][0][typat]);
+	printf( "   rrp = %lf; h11p= %lf; h22p= %lf; h33p= %lf \n",PSP->rrp[typat],PSP->h[0][0][1][typat],PSP->h[1][1][1][typat],PSP->h[2][2][1][typat]);
+	printf( "   rrp = %lf; k11p= %lf; k22p= %lf; k33p= %lf \n",PSP->rrp[typat],PSP->k11p[typat],PSP->k22p[typat],PSP->k33p[typat]);
+	printf( "   rrd = %lf; h11d= %lf; h22d= %lf; h33d= %lf \n",PSP->rrd[typat],PSP->h[0][0][2][typat],PSP->h[1][1][2][typat],PSP->h[2][2][2][typat]);
+	printf( "   rrd = %lf; k11d= %lf; k22d= %lf; k33d= %lf \n",PSP->rrd[typat],PSP->k11d[typat],PSP->k22d[typat],PSP->k33d[typat]);
+	printf( "   rrf = %lf; h11f= %lf; h22f= %lf; h33f= %lf \n",PSP->rrf[typat],PSP->h[0][0][3][typat],PSP->h[1][1][3][typat],PSP->h[2][2][3][typat]);
+	printf( "   rrf = %lf; k11f= %lf; k22f= %lf; k33f= %lf \n",PSP->rrf[typat],PSP->k11f[typat],PSP->k22f[typat],PSP->k33f[typat]);
+	printf( "\n");
 	/*	printf("h000 = %lf\n", PSP->h[0][0][0][typat]);
 	printf("h100 = %lf\n", PSP->h[1][0][0][typat]);
 	printf("h010 = %lf\n", PSP->h[0][1][0][typat]);

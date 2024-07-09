@@ -90,7 +90,7 @@ void transform_HKL(MottJonesConditions * MJC)
   MJC->nL = L;
 } //END of Transform_hklreflection_
 
-void find_symmetric_hkl(FILE * flog, VectorIndices* VECT, Symmetry* SYM, NumberGrid* GRD) 
+void find_symmetric_hkl(VectorIndices* VECT, Symmetry* SYM, NumberGrid* GRD) 
 {
   int j;
   int sym;
@@ -121,7 +121,7 @@ void find_symmetric_hkl(FILE * flog, VectorIndices* VECT, Symmetry* SYM, NumberG
   L_arr = AllocateMemory_oneD_int(L_arr, nsymor);
   /*End of allocate memory*/
 
-  fprintf(flog, "\nSymmetrically equivalent HKL\n");
+  printf( "\nSymmetrically equivalent HKL\n");
   /*assign first element of HKL array to input HKL*/
   H_arr[0] = H;
   K_arr[0] = K;
@@ -153,7 +153,7 @@ void find_symmetric_hkl(FILE * flog, VectorIndices* VECT, Symmetry* SYM, NumberG
 	}
   }
   
-  fprintf(flog, "\tMultiplicity of HKL Reflection = %d\n", nHKL);
+  printf( "\tMultiplicity of HKL Reflection = %d\n", nHKL);
   /*allocate memory for RFLC arrays*/
   VECT->H_arr = AllocateMemory_oneD_int(VECT->H_arr, nHKL);
   VECT->K_arr = AllocateMemory_oneD_int(VECT->K_arr, nHKL);
@@ -186,7 +186,7 @@ void find_symmetric_hkl(FILE * flog, VectorIndices* VECT, Symmetry* SYM, NumberG
     else {
       VECT->L_posarr[j] = L_arr[j]; 
     }
-	fprintf(flog, "\t#%d:   %d(%d) %d(%d) %d(%d)\n", j+1, VECT->H_arr[j], VECT->H_posarr[j], VECT->K_arr[j], VECT->K_posarr[j], VECT->L_arr[j], VECT->L_posarr[j]);
+	printf( "\t#%d:   %d(%d) %d(%d) %d(%d)\n", j+1, VECT->H_arr[j], VECT->H_posarr[j], VECT->K_arr[j], VECT->K_posarr[j], VECT->L_arr[j], VECT->L_posarr[j]);
   }
   VECT->nHKL = nHKL;
 
@@ -197,7 +197,7 @@ void find_symmetric_hkl(FILE * flog, VectorIndices* VECT, Symmetry* SYM, NumberG
 
 } //END of Find_HKLsymmetry
   
-void find_MJregion(FILE * flog, VectorIndices *VECT, UnitCell *UC) 
+void find_MJregion(VectorIndices *VECT, UnitCell *UC) 
 {
   int H, K, L;
   double x0, y0, z0;
@@ -206,7 +206,7 @@ void find_MJregion(FILE * flog, VectorIndices *VECT, UnitCell *UC)
   double mag_Ghkl;
   double minr, maxr;
   
-  fprintf(flog, "\n Finding shell in reciprocal space to analyze.\n");
+  printf( "\n Finding shell in reciprocal space to analyze.\n");
   /*Initialize Variables*/
   H = VECT->H;
   K = VECT->K;
@@ -223,17 +223,17 @@ void find_MJregion(FILE * flog, VectorIndices *VECT, UnitCell *UC)
   kz = x0*UC->ang_az_star + y0*UC->ang_bz_star + z0*UC->ang_cz_star;
   /*calc magnitude/ distance of kx,ky,kx*/
   mag_Ghkl = sqrt(kx*kx+ky*ky+kz*kz);
-  fprintf(flog, "\tCenter of JZ face = %lf %lf %lf\t (%lf %lf %lf)ang-1 |G_hkl|=%lf ang-1\n", x0, y0, z0, kx, ky, kz, mag_Ghkl);
+  printf( "\tCenter of JZ face = %lf %lf %lf\t (%lf %lf %lf)ang-1 |G_hkl|=%lf ang-1\n", x0, y0, z0, kx, ky, kz, mag_Ghkl);
   
   minr = mag_Ghkl - rad;
   maxr = mag_Ghkl + rad;
-  fprintf(flog, "\tShell: inner radius = %lf ang-1\t outer radius = %lfang-1\n", minr, maxr);
+  printf( "\tShell: inner radius = %lf ang-1\t outer radius = %lfang-1\n", minr, maxr);
   VECT->minr = minr;
   VECT->maxr = maxr;
 
 } //END of find_MJregion 
 
-void concatinate_HKL_potential(FILE * flog, EnergyContribution * ECON, EnergyStep * ESTP) 
+void concatinate_HKL_potential(EnergyContribution * ECON, EnergyStep * ESTP) 
 {
   int nEstep;
   int dE;
@@ -243,8 +243,7 @@ void concatinate_HKL_potential(FILE * flog, EnergyContribution * ECON, EnergySte
   /*Allocate Memory*/
   ECON->total_potential = AllocateMemory_oneD_double(ECON->total_potential, nEstep);
   
-  fprintf(flog, "\nConcatinating local and nonlocal potential grids.\n");
-  printf("\nConcatinating local and nonlocal potential grids.\n");
+  printf( "\nConcatinating local and nonlocal potential grids.\n");
   
   /*add local and nonlocal grids to find total potential energy*/
   total_potential = 0.0;
@@ -254,14 +253,13 @@ void concatinate_HKL_potential(FILE * flog, EnergyContribution * ECON, EnergySte
   }
   
   printf("\tTotal Potential Energy is %lf \n", total_potential);
-  fprintf(flog, "Total Potential Energy is %lf \n", total_potential);
 
   /*free memory for local and nonlocal*/
   ECON->local = FreeMemory_oneD_double(ECON->local);
   ECON->nonlocal = FreeMemory_oneD_double(ECON->nonlocal);
 }
 
-void integrate_HKL_potential(FILE * flog, EnergyContribution * ECON, EnergyStep * ESTP, AtomicVariables * ATM)
+void integrate_HKL_potential(EnergyContribution * ECON, EnergyStep * ESTP, AtomicVariables * ATM)
 {
   int nEstep;
   int dE;
@@ -274,7 +272,6 @@ void integrate_HKL_potential(FILE * flog, EnergyContribution * ECON, EnergyStep 
   dE_zero = ESTP->dE_zero;
   natom = ATM->natom;
 
-  fprintf(flog, "\nIntegrated the Total Potential Energy.\n");
   printf("\nIntegrated the Total Potential Energy.\n");
   
   Eint_Ha = 0.0;
@@ -284,7 +281,6 @@ void integrate_HKL_potential(FILE * flog, EnergyContribution * ECON, EnergyStep 
   }
   Eint_eV_peratom = (Eint_Ha*HATOEV)/((double)natom);
 
-  fprintf(flog, "\t iMJHP = %lf eV/atom\n", Eint_eV_peratom);
-  printf("\t iMJHP = %lf eV/atom\n", Eint_eV_peratom);
+  printf( "\t iMJHP = %lf eV/atom\n", Eint_eV_peratom);
 
 }

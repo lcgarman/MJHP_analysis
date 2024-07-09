@@ -10,7 +10,7 @@
 #include "allocate_memory.h"
 #include "twotheta_functions.h"
 
-void calculate_powder_pattern(FILE * flog, TwoTheta * TTH, BinaryGrid* BIN, NumberGrid* GRD, UnitCell* UC, Symmetry* SYM) 
+void calculate_powder_pattern(FILE *flog, TwoTheta * TTH, BinaryGrid* BIN, NumberGrid* GRD, UnitCell* UC, Symmetry* SYM) 
 {
   int ngfftx, ngffty, ngfftz;
   int h0, k0, l0;
@@ -71,8 +71,7 @@ void calculate_powder_pattern(FILE * flog, TwoTheta * TTH, BinaryGrid* BIN, Numb
   /*end of allocation*/
 
   /*Begin finding powder pattern*/
-  fprintf(flog, "\nBegin Calculating Powder Pattern\n");
-  printf("\nBegin Calculating Powder Pattern\n");
+  fprintf(flog,  "\nBegin Calculating Powder Pattern\n");
 
   for (h0=0;h0<ngfftx;h0++) {
 	for (k0=0;k0<ngffty;k0++) {
@@ -103,7 +102,7 @@ void calculate_powder_pattern(FILE * flog, TwoTheta * TTH, BinaryGrid* BIN, Numb
 
         /*find symmetric hkl reflections*/
         match = 0;
-		fprintf(flog, "HKL = %d %d %d\n", h1, k1, l1);
+		fprintf(flog,  "HKL = %d %d %d\n", h1, k1, l1);
         for(sym=0;sym<nsymor;sym++) {
           if (match == 1) break;
 	      H_symm = SYM->symor[0][0][sym]*h1 + SYM->symor[1][0][sym]*k1 + SYM->symor[2][0][sym]*l1;
@@ -115,7 +114,7 @@ void calculate_powder_pattern(FILE * flog, TwoTheta * TTH, BinaryGrid* BIN, Numb
             if ((H_symm==H_arr[j])&&(K_symm==K_arr[j])&&(L_symm==L_arr[j])&&(fabs(F_diff)<tol)) {
               rflc_mult[j]++;
               match = 1;
-              fprintf(flog, "\tMATCH(%e): %d %d %d F_hkl=%e\t == %d %d %d F_hkl=%e\n",F_diff, h1, k1, l1, F_hkl_val, H_arr[j], K_arr[j], L_arr[j], F_hkl[j]);
+              fprintf(flog,  "\tMATCH(%e): %d %d %d F_hkl=%e\t == %d %d %d F_hkl=%e\n",F_diff, h1, k1, l1, F_hkl_val, H_arr[j], K_arr[j], L_arr[j], F_hkl[j]);
               hkl_sum_new = h1+k1+l1;
               if (hkl_sum_new>hkl_sum[j]) {
                 H_arr[j] = h1;
@@ -152,7 +151,7 @@ void calculate_powder_pattern(FILE * flog, TwoTheta * TTH, BinaryGrid* BIN, Numb
   TTH->d_hkl = AllocateMemory_oneD_double(TTH->d_hkl, TTH->nrflc);
   TTH->F_hkl = AllocateMemory_oneD_double(TTH->F_hkl, TTH->nrflc);
 
-  fprintf(flog, "\nStoring Reflections:\n");
+  fprintf(flog,  "\nStoring Reflections:\n");
   /*store vaiables in PXRD struct*/
   for (j=0;j<symm_nhkl;j++) {
     TTH->rflc_H[j] = H_arr[j];
@@ -162,7 +161,7 @@ void calculate_powder_pattern(FILE * flog, TwoTheta * TTH, BinaryGrid* BIN, Numb
     TTH->d_hkl[j] = d_hkl[j];
     TTH->F_hkl[j] = F_hkl[j];
     TTH->rflc_mult[j] = rflc_mult[j];
-    fprintf(flog, "\t%d HKL = %d %d %d\t mult=%d\t F_hkl = %lf\n", j, H_arr[j], K_arr[j], L_arr[j], rflc_mult[j], F_hkl[j]); 
+    fprintf(flog,  "\t%d HKL = %d %d %d\t mult=%d\t F_hkl = %lf\n", j, H_arr[j], K_arr[j], L_arr[j], rflc_mult[j], F_hkl[j]); 
   }
 
   /*free temporary allocated variables*/
@@ -195,8 +194,7 @@ void fold_reflections_toBZ(FILE * flog, TwoTheta * TTH)
   TTH->BZkpt = AllocateMemory_twoD_double(TTH->BZkpt, nrflc, 3);
   /*end of allocation and initilization*/
 
-  fprintf(flog, "\nFolding PXRD Reflections Back into Brillouin Zone.\n");  
-  printf("\nFolding PXRD Reflections Back into Brillouin Zone.\n");  
+  fprintf(flog,  "\nFolding PXRD Reflections Back into Brillouin Zone.\n");  
 
   for (n=0;n<nrflc;n++) {
     TTH->BZkpt[n][0] = (double) TTH->rflc_H[n]/2.0;
@@ -273,8 +271,8 @@ void symmetry_folded_reflections(FILE * flog, char filename[100], TwoTheta * TTH
   TTH->rflc_L_sym = AllocateMemory_oneD_int(TTH->rflc_L_sym, nrflc);
   /*end of allocation*/
 
-  fprintf(flog, "\nApplying Symmetry to minimize kpts needed.\n");
-  printf("\nApplying Symmetry to Folded Reflections.\n");
+  fprintf(flog,  "\nApplying Symmetry to minimize kpts needed.\n");
+  fprintf(flog, "\nApplying Symmetry to Folded Reflections.\n");
   /*intializing symmetric arrays*/
   kx_sym[0] = TTH->BZkpt[0][0];
   ky_sym[0] = TTH->BZkpt[0][1];
@@ -314,7 +312,7 @@ void symmetry_folded_reflections(FILE * flog, char filename[100], TwoTheta * TTH
 	}
   }
 
-  fprintf(flog, "\t Symmetrized kpts and Corresponding Reflections:\n");
+  fprintf(flog,  "\t Symmetrized kpts and Corresponding Reflections:\n");
   for (n=0;n<nrflc;n++) {
     pw_x = (double) TTH->rflc_H_sym[n]/2.0;
     pw_y = (double) TTH->rflc_K_sym[n]/2.0;
@@ -329,13 +327,13 @@ void symmetry_folded_reflections(FILE * flog, char filename[100], TwoTheta * TTH
     TTH->hpw_sym[n] = pw_x - kx; 
     TTH->kpw_sym[n] = pw_y - ky; 
     TTH->lpw_sym[n] = pw_z - kz; 
-	fprintf(flog, "\t %lf %lf %lf\t%lf %lf %lf %d %d %d\n", pw_x, pw_y, pw_z, TTH->BZkpt_sym[n][0], TTH->BZkpt_sym[n][1], TTH->BZkpt_sym[n][2], TTH->hpw_sym[n], TTH->kpw_sym[n], TTH->lpw_sym[n]);
+	fprintf(flog,  "\t %lf %lf %lf\t%lf %lf %lf %d %d %d\n", pw_x, pw_y, pw_z, TTH->BZkpt_sym[n][0], TTH->BZkpt_sym[n][1], TTH->BZkpt_sym[n][2], TTH->hpw_sym[n], TTH->kpw_sym[n], TTH->lpw_sym[n]);
   }
 
   /*print into modified abinit in file*/
   mabin=fopen(filename, "a");
   if (mabin==NULL) {
-    printf("%s not found. \n", filename);
+    fprintf(flog, "%s not found. \n", filename);
     exit(0);
   }
   fprintf(mabin,"\n!---- MJHP 2THETA VARS ----!\n");
@@ -486,7 +484,7 @@ void read_reflections(char filename[200], TwoTheta * TTH)
   fclose(frflc);
 }//END of read in rflc file
   
-void concatinate_twotheta_potential(FILE * flog, EnergyContribution * ECON, EnergyStep * ESTP, TwoTheta *TTH) 
+void concatinate_twotheta_potential(EnergyContribution * ECON, EnergyStep * ESTP, TwoTheta *TTH) 
 {
   int nEstep;
   int dE;
@@ -499,7 +497,6 @@ void concatinate_twotheta_potential(FILE * flog, EnergyContribution * ECON, Ener
   /*Allocate Memory*/
   ECON->rflc_total = AllocateMemory_twoD_double(ECON->rflc_total, nEstep, nrflc);
   
-  fprintf(flog, "\nConcatinating local and nonlocal potential grids.\n");
   printf("\nConcatinating local and nonlocal potential grids.\n");
   
   /*add local and nonlocal grids to find total potential energy*/
@@ -509,7 +506,7 @@ void concatinate_twotheta_potential(FILE * flog, EnergyContribution * ECON, Ener
 	  ECON->rflc_total[dE][n] = ECON->rflc_local[dE][n] + ECON->rflc_nonlocal[dE][n];
 	  reflection_total += ECON->rflc_total[dE][n];
     }
-    fprintf(flog, "Total Potential Energy for rflc %d = %lf \n", n, reflection_total);
+    printf( "Total Potential Energy for rflc %d = %lf \n", n, reflection_total);
   }
   
   /*free memory for local and nonlocal*/
