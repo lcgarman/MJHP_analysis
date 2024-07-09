@@ -12,6 +12,5 @@
  double HATOEV = 27.211396;
  int REAL = 0;
  int IMAG = 1;
- double SIGMA = 0.1;
+ double SIGMA = 0.10;
  int EMESH = 100;
-

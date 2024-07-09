@@ -122,7 +122,7 @@ void symmorphic_symmetry(Symmetry* SYM)
 
   nsymor = 0;
   for (sym=0;sym<nsym;sym++) {
-	if ((fabs(SYM->tnons[0][sym])>tolerance)||(fabs(SYM->tnons[1][sym])>tolerance)||(fabs(SYM->tnons[2][sym])>tolerance)) continue;
+//	if ((fabs(SYM->tnons[0][sym])>tolerance)||(fabs(SYM->tnons[1][sym])>tolerance)||(fabs(SYM->tnons[2][sym])>tolerance)) continue;
     symor[0][0][nsymor] = SYM->symrel[0][0][sym];
     symor[0][1][nsymor] = SYM->symrel[0][1][sym];
     symor[0][2][nsymor] = SYM->symrel[0][2][sym];
