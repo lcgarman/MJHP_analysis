@@ -64,7 +64,7 @@ printf("working\n");
   /*open log file and print header*/
   strcpy(MJLOGfilename, fcab.ABOfilename);
   strcat(MJLOGfilename, "_rflc");
-  strcat(MJLOGfilename, ".mjlog");
+  strcat(MJLOGfilename, ".log");
   flog = fopen(MJLOGfilename, "w");
   if(flog==NULL) {
     printf("%s not found. \n", MJLOGfilename);
