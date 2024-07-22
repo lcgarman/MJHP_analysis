@@ -125,6 +125,12 @@ void mjhp2theta_nonlocal_potential(TwoTheta *TTH, EnergyStep *ESTP, Wavefunction
   Plm = NULL;
   /*Allocate memory for large variables in this function*/
   ECON->rflc_nonlocal = AllocateMemory_twoD_double(ECON->rflc_nonlocal, nEstep, nrflc);
+  for (dE=0;dE<nEstep;dE++) {
+    for (n=0;n<nrflc;n++) {
+      ECON->rflc_nonlocal[dE][n] = 0.0;
+    }
+  }
+  total_nonlocal = 0.0;
   l_max_type = AllocateMemory_oneD_int(l_max_type, ntypat);
   i_max_type = AllocateMemory_twoD_int(i_max_type, ntypat, 5);
   ph = AllocateMemory_fourD_double(ph, 4, 4, 5, ntypat);

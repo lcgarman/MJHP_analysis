@@ -11,7 +11,7 @@
 #include "allocate_memory.h"
 #include "mjhpHKL_density.h"
 
-void mjhpHKL_density(FILE * flog, NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmetry *SYM, UnitCell *UC, VectorIndices *VECT)
+void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmetry *SYM, UnitCell *UC, VectorIndices *VECT)
 {
   int nkpt;
   int nband;
@@ -96,11 +96,10 @@ void mjhpHKL_density(FILE * flog, NumberGrid *GRD, BinaryGrid *BIN, Wavefunction
   }
   /*End of memory allocation*/
   
-  printf("Calculating Electron Density\n");
-  fprintf(flog, "\nCalculating Electron Density\n");
+  printf("\nCalculating Electron Density\n");
   /*Begin Calculating Electron density from HKL*/
   for (kptno=0;kptno<nkpt;kptno++) { 
-    fprintf(flog, "kpt %d %lf %lf %lf kmult=%d\n", kptno, WFK->kpt[0][kptno], WFK->kpt[1][kptno], WFK->kpt[2][kptno], SYM->mult[kptno]);
+    printf("kpt %d %lf %lf %lf kmult=%d\n", kptno, WFK->kpt[0][kptno], WFK->kpt[1][kptno], WFK->kpt[2][kptno], SYM->mult[kptno]);
 	npw = WFK->npw[kptno];
 
 	for (band=0;band<nband;band++) {
@@ -149,9 +148,9 @@ void mjhpHKL_density(FILE * flog, NumberGrid *GRD, BinaryGrid *BIN, Wavefunction
 		  mag_pw2 = sqrt(ang_pw2x*ang_pw2x + ang_pw2y*ang_pw2y + ang_pw2z*ang_pw2z);
           /*if both pw1 and pw2 lie in shell and pw1-pw2=HKL*/
           if ((mag_pw2>maxr)||(mag_pw2<minr)) continue;
-		  fprintf(flog, "\tH K L = %d %d %d \n", MJ_H, MJ_K, MJ_L); 
-		  fprintf(flog, "\t\t pw1 = %lf %lf %lf |pw1|=%lf\n", pw1_x, pw1_y, pw1_z, mag_pw1);
-		  fprintf(flog, "\t\t pw2 = %lf %lf %lf |pw2|=%lf\n", pw2_x, pw2_y, pw2_z, mag_pw2);
+		  printf("\tH K L = %d %d %d \n", MJ_H, MJ_K, MJ_L); 
+		  printf("\t\t pw1 = %lf %lf %lf |pw1|=%lf\n", pw1_x, pw1_y, pw1_z, mag_pw1);
+		  printf("\t\t pw2 = %lf %lf %lf |pw2|=%lf\n", pw2_x, pw2_y, pw2_z, mag_pw2);
 
           /*make a hkl grid needs to be all (+) numbers*/
 		  if (h1<0) hpos = h1 + ngfftx;
@@ -166,7 +165,7 @@ void mjhpHKL_density(FILE * flog, NumberGrid *GRD, BinaryGrid *BIN, Wavefunction
 //			mag_diff = mag_pw1 - mag_pw2;
 //			exponent = -(mag_diff*mag_diff)/sigma;
 //			broad = exp(exponent);
-//          fprintf(flog, "\t\tbroadening = %lf\n", broad);
+//          printf("\t\tbroadening = %lf\n", broad);
 
 		  grid_in[i_index][REAL] = WFK->cg[kptno][band][pw1][0];
 		  grid_in[i_index][IMAG] = -WFK->cg[kptno][band][pw1][1];
@@ -192,9 +191,9 @@ void mjhpHKL_density(FILE * flog, NumberGrid *GRD, BinaryGrid *BIN, Wavefunction
 		}  /*END jy->ngffty loop*/
 	  }  /*END jz->ngfftz loop*/
 	} /*END band->nband loop*/
-    fprintf(flog, "\tTotal Density = %lf\n", coeff_total*UC->voxelV);
+    printf("\tTotal Density = %lf\n", coeff_total*UC->voxelV);
   } /*END: kpt loop*/
-  fprintf(flog, "\nTotal Mott-Jones Density = %lf\n", coeff_total*UC->voxelV);
+  printf("\nTotal Mott-Jones Density = %lf\n", coeff_total*UC->voxelV);
 
   /*free fftw memory*/
   fftw_destroy_plan(wfk_den_plan);
@@ -264,7 +263,6 @@ void mjhpHKL_density(FILE * flog, NumberGrid *GRD, BinaryGrid *BIN, Wavefunction
     }
   }
   printf("Total Normalized MJ Density %lf\n", coeff_total*UC->voxelV);
-  fprintf(flog, "Total Normalized MJ Density %lf\n", coeff_total*UC->voxelV);
 
   /*rewrap grid so jxyz[max] = jxyz[0]*/
   for(jx=0;jx<NGX;jx++) {

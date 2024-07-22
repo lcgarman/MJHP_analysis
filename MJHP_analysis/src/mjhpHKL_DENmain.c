@@ -18,22 +18,19 @@ int main(int argc, char * argv[])
 {
 
   /*declaring filenames*/
-  FILE* flog;
   char MJINfilename [200];
   char MJXSFfilename [200];
   char MJXSFfilename_N [200];
   char MJXSFfilename_N1 [200];
   char MJXSFfilename_N2 [200];
-  char MJLOGfilename [200];
   char ABOfilename [200];
   char WFKfilename [200];
   char H_append [10];
   char K_append [10];
   char L_append [10];
-  char scanEmin_append [10];
-  char scanEmid_append [10];
-  char scanEmax_append [10];
-  char ndts_append[10];
+  char scanEmin_append [20];
+  char scanEmid_append [20];
+  char scanEmax_append [20];
   int H_conventional, K_conventional, L_conventional;
   int n;
   int ndts;
@@ -70,45 +67,28 @@ int main(int argc, char * argv[])
   /*Read the mj file and store variables*/
   read_mjin_header(MJINfilename, &mjc, &fcab, &fsph);
   ndts = mjc.ndts;
-
-  /*open log file and print header*/
-  strcpy(MJLOGfilename, fcab.MJOUTfilename);
-  strcat(MJLOGfilename, "_");
-  sprintf(ndts_append, "%d", ndts);
-  strcat(MJLOGfilename, "HKL_");
-  sprintf(scanEmin_append, "%.2f", mjc.scanE_min);
-  strcat(MJLOGfilename, scanEmin_append);
-  strcat(MJLOGfilename, "_");
-  sprintf(scanEmid_append, "%.2f", mjc.scanE_mid);
-  strcat(MJLOGfilename, scanEmid_append);
-  strcat(MJLOGfilename, "_");
-  sprintf(scanEmax_append, "%.2f", mjc.scanE_max);
-  strcat(MJLOGfilename, scanEmax_append);
-  strcat(MJLOGfilename, ".mjlog");
-  flog = fopen(MJLOGfilename, "w");
-  if(flog==NULL) {
-    printf("%s not found. \n", MJLOGfilename);
-    exit(0);
-  }  
+  sprintf(scanEmin_append, "%lf", mjc.scanE_min);
+  sprintf(scanEmid_append, "%lf", mjc.scanE_mid);
+  sprintf(scanEmax_append, "%lf", mjc.scanE_max);
 
   /*store file names*/
   strcpy(ABOfilename, fcab.ABOfilename);
   strcpy(MJXSFfilename, fcab.MJOUTfilename);
-  fprintf(flog, "mjin: %s\n", ABOfilename);
-  fprintf(flog, "mjXSF: %s\n", MJXSFfilename);
-  fprintf(flog, "\n Number of HKL: %d\n", ndts);
+  printf("mjin: %s\n", ABOfilename);
+  printf("mjXSF: %s\n", MJXSFfilename);
+  printf("\n Number of HKL: %d\n", ndts);
   for(n=0;n<ndts;n++) {
-    fprintf(flog, "DTSET %d\t HKL = %d %d %d\n", n+1, mjc.jzH[n], mjc.jzK[n], mjc.jzL[n]);
+    printf("DTSET %d\t HKL = %d %d %d\n", n+1, mjc.jzH[n], mjc.jzK[n], mjc.jzL[n]);
   }
-  fprintf(flog, "\nBegin Reading Files...\n");
+  printf("\nBegin Reading Files...\n");
 
   /*Read Wavefunction file*/
   strcpy(WFKfilename, ABOfilename);
   strcat(WFKfilename, "_o_WFK");
-  read_binary_abinit(flog, WFKfilename, 0, &ucell, &grid, &symm, &wave, &bin, &atom); 
+  read_binary_abinit(WFKfilename, 0, &ucell, &grid, &symm, &wave, &bin, &atom); 
 
   /*Find Unit Cell parameters in real and reciprocal space*/
-  Determine_CellParameters(flog, &ucell, &grid);
+  Determine_CellParameters(&ucell, &grid);
   symmorphic_symmetry(&symm); 
 
   for (n=0;n<ndts;n++) {
@@ -119,7 +99,7 @@ int main(int argc, char * argv[])
 	H_conventional = mjc.nH;
 	K_conventional = mjc.nK;
 	L_conventional = mjc.nL;
-    fprintf(flog, "\nDTSET %d\t HKL = %d %d %d\n", n+1, mjc.nH, mjc.nK, mjc.nL);
+    printf("\nDTSET %d\t HKL = %d %d %d\n", n+1, mjc.nH, mjc.nK, mjc.nL);
     printf("\n\nDTSET %d\t HKL = %d %d %d\n", n+1, mjc.nH, mjc.nK, mjc.nL);
 
 	/*transfrom HKL to primitive centering*/
@@ -129,14 +109,14 @@ int main(int argc, char * argv[])
 	vect.K = mjc.nK;
 	vect.L = mjc.nL;
 	printf("H=%d K=%d L=%d (%d %d %d)\n", vect.H, vect.K, vect.L, H_conventional, K_conventional, L_conventional); 
-	fprintf(flog, "\nHKL conventional: %d %d %d\n", H_conventional, K_conventional, L_conventional);
-	fprintf(flog, "HKL primitive: %d %d %d\n", vect.H, vect.K, vect.L); 
+	printf("\nHKL conventional: %d %d %d\n", H_conventional, K_conventional, L_conventional);
+	printf("HKL primitive: %d %d %d\n", vect.H, vect.K, vect.L); 
 	
     /*find symmetric HKL indices*/
-	find_symmetric_hkl(flog, &vect, &symm, &grid); 
+	find_symmetric_hkl(&vect, &symm, &grid); 
 	
 	/*find the shell in reciprocal space to include potential energy contributions*/
-	find_MJregion(flog, &vect, &ucell);
+	find_MJregion(&vect, &ucell);
 	
 	/*prepare xsffilename_HKL_*/
 	sprintf(H_append, "%d", H_conventional);
@@ -162,23 +142,23 @@ int main(int argc, char * argv[])
 	/* FIRST calc density from minE to 0*/
 	vect.scanE_start = mjc.scanE_min;
 	vect.scanE_stop = mjc.scanE_mid;
-	fprintf(flog, "\nScanning Energy in Range: %lf to %lf (eV)\n", vect.scanE_start, vect.scanE_stop);
+	printf("\nScanning Energy in Range: %lf to %lf (eV)\n", vect.scanE_start, vect.scanE_stop);
 	printf("\nScanning Energy in Range: %lf to %lf (eV)\n", vect.scanE_start, vect.scanE_stop);
 	/*calculate the local potential energy contribution*/
-	mjhpHKL_density(flog, &grid, &bin, &wave, &symm, &ucell, &vect);
+	mjhpHKL_density(&grid, &bin, &wave, &symm, &ucell, &vect);
 	/*print total potential energy contributions*/ 
-	fprintf(flog, "\nPrinting Mott-Jones Density to: %s\n", MJXSFfilename_N1);
+	printf("\nPrinting Mott-Jones Density to: %s\n", MJXSFfilename_N1);
 	print_XSF(MJXSFfilename_N1, &ucell, &grid, &bin, &atom);
 	
 	/* SECOND calc density from 0 maxE*/
 	vect.scanE_start = mjc.scanE_mid;
 	vect.scanE_stop = mjc.scanE_max;
-	fprintf(flog, "\nScanning Energy in Range: %lf to %lf (eV)\n", vect.scanE_start, vect.scanE_stop);
+	printf("\nScanning Energy in Range: %lf to %lf (eV)\n", vect.scanE_start, vect.scanE_stop);
 	printf("\nScanning Energy in Range: %lf to %lf (eV)\n", vect.scanE_start, vect.scanE_stop);
 	/*calculate the local potential energy contribution*/
-	mjhpHKL_density(flog, &grid, &bin, &wave, &symm, &ucell, &vect);
+	mjhpHKL_density(&grid, &bin, &wave, &symm, &ucell, &vect);
 	/*print total potential energy contributions*/ 
-	fprintf(flog, "\nPrinting Mott-Jones Density to: %s\n", MJXSFfilename_N2);
+	printf("\nPrinting Mott-Jones Density to: %s\n", MJXSFfilename_N2);
 	print_XSF(MJXSFfilename_N2, &ucell, &grid, &bin, &atom);
 
 	/*free HKL variables for next iteration*/
@@ -191,7 +171,7 @@ int main(int argc, char * argv[])
   }
 	
   /*Free allocated memory not needed anymore*/
-  fprintf(flog, "\nFree Allocated Variables\n");
+  printf("\nFree Allocated Variables\n");
   FreeMemory_Wavefunctions(&wave);
   wave.npw = FreeMemory_oneD_int(wave.npw);
   symm.symrel = FreeMemory_threeD_int(symm.symrel, 3, 3);
@@ -204,8 +184,7 @@ int main(int argc, char * argv[])
   wave.eigen = FreeMemory_twoD_double(wave.eigen, wave.nkpt);
   symm.symor = FreeMemory_threeD_int(symm.symor, 3, 3);
 
-  fprintf(flog, "\n\nEND OF FILE\n");
-  fclose(flog);
+  printf("\n\nEND OF FILE\n");
 
   return(0);
 }

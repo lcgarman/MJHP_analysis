@@ -20,11 +20,11 @@ void Determine_CellParameters(UnitCell* UC, NumberGrid* GRD)
   UC->bohr_cellV = UC->bohr_ax*(UC->bohr_by*UC->bohr_cz-UC->bohr_bz*UC->bohr_cy)-\
 				   UC->bohr_ay*(UC->bohr_bx*UC->bohr_cz-UC->bohr_bz*UC->bohr_cx)+\
 				   UC->bohr_az*(UC->bohr_bx*UC->bohr_cy-UC->bohr_by*UC->bohr_cx);
-  //printf("Cell Volume in Bohr^3 = %lf\n", UC->bohr_cellV);
+  printf("Cell Volume in Bohr^3 = %lf\n", UC->bohr_cellV);
 
   /*Determine the voxel volume in bohr^3*/
   UC->voxelV = UC->bohr_cellV/(GRD->ngfftx*GRD->ngffty*GRD->ngfftz);
-  //printf("Voxel Volume in Bohr^3 = %lf\n", UC->voxelV);
+  printf("Voxel Volume in Bohr^3 = %lf\n", UC->voxelV);
 
   /*Determine Reciprocal lattice parameters in Bohr*/
   UC->bohr_ax_star = 2*PI*(UC->bohr_by*UC->bohr_cz-UC->bohr_bz*UC->bohr_cy)/UC->bohr_cellV;

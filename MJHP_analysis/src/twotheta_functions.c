@@ -496,6 +496,11 @@ void concatinate_twotheta_potential(EnergyContribution * ECON, EnergyStep * ESTP
   nrflc = TTH->nrflc;
   /*Allocate Memory*/
   ECON->rflc_total = AllocateMemory_twoD_double(ECON->rflc_total, nEstep, nrflc);
+  for (dE=0;dE<nEstep;dE++) {
+    for (n=0;n<nrflc;n++) {
+      ECON->rflc_total[dE][n] = 0.0;
+    }
+  }
   
   printf("\nConcatinating local and nonlocal potential grids.\n");
   

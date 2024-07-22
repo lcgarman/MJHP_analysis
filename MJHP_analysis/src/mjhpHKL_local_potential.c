@@ -72,6 +72,7 @@ void mjhpHKL_local_potential(VectorIndices *VECT, NumberGrid *GRD, EnergyStep *E
  
   /*Allocate memory for variables in this function*/
   ECON->local = AllocateMemory_oneD_double(ECON->local, nEstep);
+  for (dE=0;dE<nEstep;dE++) ECON->local[dE] = 0.0;
 
   printf( "\nCalculating Local Potential Energy:\n");
   /*NOW start Calculating Potential Energy contribution for each kpt*/

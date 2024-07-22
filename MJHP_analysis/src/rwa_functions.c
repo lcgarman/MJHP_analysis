@@ -117,6 +117,82 @@ void print_mjhpHKL_energy(char filename[200], VectorIndices *VECT, EnergyStep *E
   ECON->total_potential = FreeMemory_oneD_double(ECON->total_potential);
 } //END of Print_Reflection function
 
+void read_mjhpHKL_energy(char filename[100], EnergyStep *ESTP, UnitCell *UC, FileCabinet *FCAB, EnergyContribution *ECON)
+{
+  FILE* fhkl;
+  char vstr[20];
+  int nEstep;
+  int dE;
+  double Elow;
+  int emesh;
+  int H, K, L;
+  double total_potential;
+  double val;
+  int n;
+
+  fhkl = fopen(filename, "r");
+  if(fhkl==NULL) {
+    printf("%s not found. \n", filename);
+    exit(0);
+  }  
+
+  printf("\nReading Energy for HKL to %s\n", filename);
+
+  /*print header information*/
+  fscanf(fhkl, "%s\n", filename);
+  fscanf(fhkl, "%s\n", vstr);
+  fscanf(fhkl, "%lf\t%lf\t%lf\n", &UC->ang_ax_star, &UC->ang_ay_star, &UC->ang_az_star);  
+  fscanf(fhkl, "%s\n", vstr);
+  fscanf(fhkl, "%lf\t%lf\t%lf\n", &UC->ang_bx_star, &UC->ang_by_star, &UC->ang_bz_star);  
+  fscanf(fhkl, "%s\n", vstr);
+  fscanf(fhkl, "%lf\t%lf\t%lf\n", &UC->ang_cx_star, &UC->ang_cy_star, &UC->ang_cz_star);  
+  fscanf(fhkl, "%s\n", vstr);
+  fscanf(fhkl, "%d \n", &nEstep);
+  ESTP->nEstep = nEstep;;
+printf("NESTEP = %d\n", ESTP->nEstep);
+  fscanf(fhkl, "%s\n", vstr);
+  fscanf(fhkl, " %lf\n", &Elow);
+  fscanf(fhkl, "%s\n", vstr);
+  fscanf(fhkl, " %d\n", &emesh);
+  fscanf(fhkl, "%s\n", vstr);
+  fscanf(fhkl, " %d\t%d\t%d\n", &H, &K, &L);
+  fscanf(fhkl, "\n");
+  /*END of Header Info*/
+
+  for (dE=0;dE<nEstep;dE++) ECON->local[dE] = 0.0;
+  /*Print Energy by hkl*/
+  total_potential = 0.0;
+  for (dE=0;dE<nEstep;dE++) {
+    fscanf(fhkl, "%d\t%lf\n", &n, &val);
+    ECON->local[dE] = val;
+    total_potential += ECON->local[dE];
+  }
+  printf("Total potential energy = %e\n", total_potential);
+
+} //END of Print_Reflection function
+
+void concatinate_hkl_grids(EnergyContribution * ECON, EnergyStep * ESTP) 
+{
+  int nEstep;
+  int dE;
+  double total_potential;
+
+  nEstep = ESTP->nEstep;
+  /*Allocate Memory*/
+  
+  printf( "\nConcatinating local and nonlocal potential grids.\n");
+  /*add local and nonlocal grids to find total potential energy*/
+  total_potential = 0.0;
+  for (dE=0;dE<nEstep;dE++) {
+    ECON->total_potential[dE] = ECON->local[dE] + ECON->total_potential[dE];
+    total_potential += ECON->total_potential[dE];
+  }
+  
+  printf("\tTotal Potential Energy is %lf \n", total_potential);
+
+  /*free memory for local and nonlocal*/
+}
+
 void print_mjhp2theta_energy(char filename[200], TwoTheta *TTH, EnergyStep * ESTP, UnitCell* UC, FileCabinet *FCAB, EnergyContribution * ECON, FermiSphere *FS)
 {
   FILE* f2th;

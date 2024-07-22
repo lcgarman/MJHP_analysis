@@ -306,10 +306,10 @@ if(npwv>max_npw) max_npw = npwv;
 	multiplicity = (WFK->wtk[j]/WFK->wtk[0]);
     SYM->mult[j] = ceil(multiplicity);
 	mult_tot += SYM->mult[j];
-//	printf("kpt: %lf %lf %lf\tmult = %d\t%d\n", WFK->kpt[0][j], WFK->kpt[1][j], WFK->kpt[2][j], SYM->mult[j], mult_tot);
+	//printf("kpt: %lf %lf %lf\tmult = %d\t%d\n", WFK->kpt[0][j], WFK->kpt[1][j], WFK->kpt[2][j], SYM->mult[j], mult_tot);
   }
   SYM->mult_tot = mult_tot;
-  //printf("#Symmetry kpoints = %d\tTotal Symmetry = %d\n", mult_tot, nsym);
+  printf("Total nkpts = %d\n",  mult_tot);
   fread(&j, sizeof(int), 1, fab);
 
   for(k=0; k<(npsp);k++) {
@@ -406,6 +406,7 @@ if(npwv>max_npw) max_npw = npwv;
     printf( "\t\tSuccess for eigen (nkpt x nband).\n");
     WFK->occ = AllocateMemory_twoD_double(WFK->occ, nkpt, WFK->nband);
     printf( "\t\tSuccess for occ (nkpt, nband).\n");
+  fflush(stdout);
     AllocateMemory_Wavefunctions(WFK);
     printf( "\t\tSuccess for cg and kg.\n");
     
@@ -459,7 +460,6 @@ if(npwv>max_npw) max_npw = npwv;
   fclose(fab);
   printf( "Finished reading %s.\n", filename);
   } //END of else stmt for WFK files
-  fflush(stdout);
 
 } //END Read_About function
 

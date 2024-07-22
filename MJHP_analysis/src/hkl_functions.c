@@ -242,6 +242,7 @@ void concatinate_HKL_potential(EnergyContribution * ECON, EnergyStep * ESTP)
   nEstep = ESTP->nEstep;
   /*Allocate Memory*/
   ECON->total_potential = AllocateMemory_oneD_double(ECON->total_potential, nEstep);
+  for (dE=0;dE<nEstep;dE++) ECON->total_potential[dE] = 0.0;
   
   printf( "\nConcatinating local and nonlocal potential grids.\n");
   
