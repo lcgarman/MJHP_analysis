@@ -16,7 +16,6 @@ void Initialize_Symmetry(Symmetry * SYM)
   SYM->symrel = NULL;
   SYM->mult = NULL;
   SYM->tnons = NULL;
-  SYM->symor = NULL;
 }
  
 void Initialize_Wavefunction(Wavefunction * WFK)

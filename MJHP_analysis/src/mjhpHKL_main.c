@@ -92,7 +92,6 @@ int main(int argc, char * argv[])
 
   /*Find Unit Cell parameters in real and reciprocal space*/
   Determine_CellParameters(&ucell, &grid);
-  symmorphic_symmetry(&symm); 
   
   /*Perform FFT on Real space potential grid*/
   FFTon_RealGrid(&bin, &grid, &ucell);
@@ -188,7 +187,6 @@ int main(int argc, char * argv[])
   symm.mult = FreeMemory_oneD_int(symm.mult);
   atom.xred = FreeMemory_twoD_double(atom.xred, 3);
   wave.eigen = FreeMemory_twoD_double(wave.eigen, wave.nkpt);
-  symm.symor = FreeMemory_threeD_int(symm.symor, 3, 3);
   mjc.jzH = FreeMemory_oneD_int(mjc.jzH);
   mjc.jzK = FreeMemory_oneD_int(mjc.jzK);
   mjc.jzL = FreeMemory_oneD_int(mjc.jzL);

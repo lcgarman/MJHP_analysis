@@ -92,9 +92,6 @@ printf("working\n");
   /*Find Unit Cell parameters in real and reciprocal space*/
   Determine_CellParameters(&ucell, &grid);
 
-  /*Find nonsymmorphic Symmetry */
-  symmorphic_symmetry(&symm); 
-
   /*define the HKL grid in reciprocal space*/
   find_HKLgrid_max(&grid); 
   prepare_HKLgrid(&grid);
@@ -126,7 +123,6 @@ printf("working\n");
   symm.tnons = FreeMemory_twoD_double(symm.tnons, 3);
   symm.mult = FreeMemory_oneD_int(symm.mult);
   atom.xred = FreeMemory_twoD_double(atom.xred, 3);
-  symm.symor = FreeMemory_threeD_int(symm.symor, 3, 3);
 
   fprintf(flog, "\n\nEND OF FILE\n");
   fclose(flog);

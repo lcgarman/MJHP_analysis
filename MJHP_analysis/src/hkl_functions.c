@@ -94,7 +94,7 @@ void find_symmetric_hkl(VectorIndices* VECT, Symmetry* SYM, NumberGrid* GRD)
 {
   int j;
   int sym;
-  int nsymor;
+  int nsym;
   int H, K, L;
   int nHKL;
   int nomatch;
@@ -107,7 +107,7 @@ void find_symmetric_hkl(VectorIndices* VECT, Symmetry* SYM, NumberGrid* GRD)
   H = VECT->H;
   K = VECT->K;
   L = VECT->L;
-  nsymor = SYM->nsymor;
+  nsym = SYM->nsym;
   ngfftx = GRD->ngfftx;
   ngffty = GRD->ngffty;
   ngfftz = GRD->ngfftz;
@@ -116,9 +116,9 @@ void find_symmetric_hkl(VectorIndices* VECT, Symmetry* SYM, NumberGrid* GRD)
   L_arr = NULL;
   
   /*Allocate Memory for HKL arrays*/
-  H_arr = AllocateMemory_oneD_int(H_arr, nsymor);
-  K_arr = AllocateMemory_oneD_int(K_arr, nsymor);
-  L_arr = AllocateMemory_oneD_int(L_arr, nsymor);
+  H_arr = AllocateMemory_oneD_int(H_arr, nsym);
+  K_arr = AllocateMemory_oneD_int(K_arr, nsym);
+  L_arr = AllocateMemory_oneD_int(L_arr, nsym);
   /*End of allocate memory*/
 
   printf( "\nSymmetrically equivalent HKL\n");
@@ -128,15 +128,15 @@ void find_symmetric_hkl(VectorIndices* VECT, Symmetry* SYM, NumberGrid* GRD)
   L_arr[0] = L;
   nHKL = 1;
   /*Find symmetry equivalent reflections based off of nonsymmorphic symm elements*/
-  for(sym=0;sym<nsymor;sym++) {
-	H_symm = SYM->symor[0][0][sym]*H + SYM->symor[1][0][sym]*K + SYM->symor[2][0][sym]*L;
-	K_symm = SYM->symor[0][1][sym]*H + SYM->symor[1][1][sym]*K + SYM->symor[2][1][sym]*L;
-	L_symm = SYM->symor[0][2][sym]*H + SYM->symor[1][2][sym]*K + SYM->symor[2][2][sym]*L;
+  for(sym=0;sym<nsym;sym++) {
+	H_symm = SYM->symrel[0][0][sym]*H + SYM->symrel[1][0][sym]*K + SYM->symrel[2][0][sym]*L;
+	K_symm = SYM->symrel[0][1][sym]*H + SYM->symrel[1][1][sym]*K + SYM->symrel[2][1][sym]*L;
+	L_symm = SYM->symrel[0][2][sym]*H + SYM->symrel[1][2][sym]*K + SYM->symrel[2][2][sym]*L;
 	nomatch = 0;
 	//printf("no%d\t H = %d\t K = %d\t L = %d\n", sym, H_symm, K_symm, L_symm);
-	//printf("\t %d*%d + %d*%d + %d*%d = %d\n",  SYM->symor[0][0][sym], H,  SYM->symor[1][0][sym], K, SYM->symor[2][0][sym], L, H_symm); 
-	//printf("\t %d*%d + %d*%d + %d*%d = %d\n",  SYM->symor[0][1][sym], H,  SYM->symor[1][1][sym], K, SYM->symor[2][1][sym], L, K_symm); 
-	//printf("\t %d*%d + %d*%d + %d*%d = %d\n",  SYM->symor[0][2][sym], H,  SYM->symor[1][2][sym], K, SYM->symor[2][2][sym], L, L_symm); 
+	//printf("\t %d*%d + %d*%d + %d*%d = %d\n",  SYM->symrel[0][0][sym], H,  SYM->symrel[1][0][sym], K, SYM->symrel[2][0][sym], L, H_symm); 
+	//printf("\t %d*%d + %d*%d + %d*%d = %d\n",  SYM->symrel[0][1][sym], H,  SYM->symrel[1][1][sym], K, SYM->symrel[2][1][sym], L, K_symm); 
+	//printf("\t %d*%d + %d*%d + %d*%d = %d\n",  SYM->symrel[0][2][sym], H,  SYM->symrel[1][2][sym], K, SYM->symrel[2][2][sym], L, L_symm); 
 
 	/*search elements in array if you find a match go to next symm element; if not store*/
     for (j=0;j<nHKL;j++) {

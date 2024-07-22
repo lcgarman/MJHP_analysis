@@ -55,8 +55,6 @@ typedef struct {
   int mult_tot; /*HERE*/
   int* mult; /*HERE*/
   double** tnons;
-  int*** symor;
-  int nsymor;
 } Symmetry;
 
 typedef struct {

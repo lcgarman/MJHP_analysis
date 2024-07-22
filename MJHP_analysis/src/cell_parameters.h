@@ -7,6 +7,4 @@
 
   void Calculate_FermiDegree(UnitCell* UC, FermiSphere* FS); 
 
-  void symmorphic_symmetry(Symmetry* SYM); 
-
 #endif

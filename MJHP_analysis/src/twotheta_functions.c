@@ -24,7 +24,7 @@ void calculate_powder_pattern(FILE *flog, TwoTheta * TTH, BinaryGrid* BIN, Numbe
   double deg_theta;
   double twotheta_val;
   int sym;
-  int nsymor;
+  int nsym;
   int match;
   int j;
   int symm_nhkl;
@@ -45,7 +45,7 @@ void calculate_powder_pattern(FILE *flog, TwoTheta * TTH, BinaryGrid* BIN, Numbe
   ngfftx = GRD->ngfftx;
   ngffty = GRD->ngffty;
   ngfftz = GRD->ngfftz;
-  nsymor = SYM->nsymor;
+  nsym = SYM->nsym;
   symm_nhkl = 0;
   tol = 1e-10;
   
@@ -103,11 +103,11 @@ void calculate_powder_pattern(FILE *flog, TwoTheta * TTH, BinaryGrid* BIN, Numbe
         /*find symmetric hkl reflections*/
         match = 0;
 		fprintf(flog,  "HKL = %d %d %d\n", h1, k1, l1);
-        for(sym=0;sym<nsymor;sym++) {
+        for(sym=0;sym<nsym;sym++) {
           if (match == 1) break;
-	      H_symm = SYM->symor[0][0][sym]*h1 + SYM->symor[1][0][sym]*k1 + SYM->symor[2][0][sym]*l1;
-	      K_symm = SYM->symor[0][1][sym]*h1 + SYM->symor[1][1][sym]*k1 + SYM->symor[2][1][sym]*l1;
-    	  L_symm = SYM->symor[0][2][sym]*h1 + SYM->symor[1][2][sym]*k1 + SYM->symor[2][2][sym]*l1;
+	      H_symm = SYM->symrel[0][0][sym]*h1 + SYM->symrel[1][0][sym]*k1 + SYM->symrel[2][0][sym]*l1;
+	      K_symm = SYM->symrel[0][1][sym]*h1 + SYM->symrel[1][1][sym]*k1 + SYM->symrel[2][1][sym]*l1;
+    	  L_symm = SYM->symrel[0][2][sym]*h1 + SYM->symrel[1][2][sym]*k1 + SYM->symrel[2][2][sym]*l1;
 	      for (j=0;j<symm_nhkl;j++) {
 		    F_diff = F_hkl_val - F_hkl[j];
             /*search for symmetry related kx, ky, kz*/
@@ -234,7 +234,7 @@ void fold_reflections_toBZ(FILE * flog, TwoTheta * TTH)
 void symmetry_folded_reflections(FILE * flog, char filename[100], TwoTheta * TTH, Symmetry * SYM) 
 {
   int nrflc;
-  int nsymor;
+  int nsym;
   int sym;
   int match;
   int* kpt_match;
@@ -250,7 +250,7 @@ void symmetry_folded_reflections(FILE * flog, char filename[100], TwoTheta * TTH
   FILE* mabin;
 
   nrflc = TTH->nrflc;
-  nsymor = SYM->nsymor;
+  nsym = SYM->nsym;
 
   /*Initialize local arrays*/
   kx_sym = NULL;
@@ -282,24 +282,24 @@ void symmetry_folded_reflections(FILE * flog, char filename[100], TwoTheta * TTH
   /*Begin Finding symmetry related kpts*/
   for (n=0;n<nrflc;n++) {
     match=0;
-    for (sym=0;sym<nsymor;sym++) {
+    for (sym=0;sym<nsym;sym++) {
       if (match==1) break;
-	  X_symm = (double) SYM->symor[0][0][sym]*TTH->BZkpt[n][0] + (double) SYM->symor[1][0][sym]*TTH->BZkpt[n][1] + (double) SYM->symor[2][0][sym]*TTH->BZkpt[n][2];
-	  Y_symm = (double) SYM->symor[0][1][sym]*TTH->BZkpt[n][0] + (double) SYM->symor[1][1][sym]*TTH->BZkpt[n][1] + (double) SYM->symor[2][1][sym]*TTH->BZkpt[n][2];
-	  Z_symm = (double) SYM->symor[0][2][sym]*TTH->BZkpt[n][0] + (double) SYM->symor[1][2][sym]*TTH->BZkpt[n][1] + (double) SYM->symor[2][2][sym]*TTH->BZkpt[n][2];
+	  X_symm = (double) SYM->symrel[0][0][sym]*TTH->BZkpt[n][0] + (double) SYM->symrel[1][0][sym]*TTH->BZkpt[n][1] + (double) SYM->symrel[2][0][sym]*TTH->BZkpt[n][2];
+	  Y_symm = (double) SYM->symrel[0][1][sym]*TTH->BZkpt[n][0] + (double) SYM->symrel[1][1][sym]*TTH->BZkpt[n][1] + (double) SYM->symrel[2][1][sym]*TTH->BZkpt[n][2];
+	  Z_symm = (double) SYM->symrel[0][2][sym]*TTH->BZkpt[n][0] + (double) SYM->symrel[1][2][sym]*TTH->BZkpt[n][1] + (double) SYM->symrel[2][2][sym]*TTH->BZkpt[n][2];
 	  //printf("\t%lf %lf %lf\t -> \t %lf %lf %lf\n", TTH->BZkpt[np1][0], TTH->BZkpt[np1][1],TTH->BZkpt[np1][2], X_symm, Y_symm, Z_symm);
 	  
       for (i=0;i<nsym_bzk;i++) {
 		if ((X_symm==kx_sym[i])&&(Y_symm==ky_sym[i])&&(Z_symm==kz_sym[i])) {
           match = 1;
-		  TTH->rflc_H_sym[n] = SYM->symor[0][0][sym]*TTH->rflc_H[n] + SYM->symor[1][0][sym]*TTH->rflc_K[n] + SYM->symor[2][0][sym]*TTH->rflc_L[n];
-		  TTH->rflc_K_sym[n] = SYM->symor[0][1][sym]*TTH->rflc_H[n] + SYM->symor[1][1][sym]*TTH->rflc_K[n] + SYM->symor[2][1][sym]*TTH->rflc_L[n];
-		  TTH->rflc_L_sym[n] = SYM->symor[0][2][sym]*TTH->rflc_H[n] + SYM->symor[1][2][sym]*TTH->rflc_K[n] + SYM->symor[2][2][sym]*TTH->rflc_L[n];
+		  TTH->rflc_H_sym[n] = SYM->symrel[0][0][sym]*TTH->rflc_H[n] + SYM->symrel[1][0][sym]*TTH->rflc_K[n] + SYM->symrel[2][0][sym]*TTH->rflc_L[n];
+		  TTH->rflc_K_sym[n] = SYM->symrel[0][1][sym]*TTH->rflc_H[n] + SYM->symrel[1][1][sym]*TTH->rflc_K[n] + SYM->symrel[2][1][sym]*TTH->rflc_L[n];
+		  TTH->rflc_L_sym[n] = SYM->symrel[0][2][sym]*TTH->rflc_H[n] + SYM->symrel[1][2][sym]*TTH->rflc_K[n] + SYM->symrel[2][2][sym]*TTH->rflc_L[n];
           kpt_match[n] = i;
           break;
         }
       }
-      if (((sym)==(nsymor-1))&&(match==0)) {
+      if (((sym)==(nsym-1))&&(match==0)) {
 		kx_sym[nsym_bzk] = TTH->BZkpt[n][0];
 		ky_sym[nsym_bzk] = TTH->BZkpt[n][1];
 		kz_sym[nsym_bzk] = TTH->BZkpt[n][2];

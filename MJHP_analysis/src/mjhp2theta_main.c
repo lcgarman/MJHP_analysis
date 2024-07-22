@@ -110,9 +110,6 @@ int main(int argc, char * argv[])
   wave.fermi = fermi;
   find_energy_bounds(&wave, &estp); 
 
-  /*Find nonsymmorphic Symmetry related to HKL points*/
-  symmorphic_symmetry(&symm); 
-  
   /*calculate the local potential energy contribution*/
   mjhp2theta_local_potential(&tth, &estp, &grid, &wave, &ucell, &bin, &econ);
 
@@ -148,7 +145,6 @@ int main(int argc, char * argv[])
   symm.mult = FreeMemory_oneD_int(symm.mult);
   atom.xred = FreeMemory_twoD_double(atom.xred, 3);
   wave.eigen = FreeMemory_twoD_double(wave.eigen, wave.nkpt);
-  symm.symor = FreeMemory_threeD_int(symm.symor, 3, 3);
 
   tth.rflc_mult = FreeMemory_oneD_int(tth.rflc_mult);
   tth.two_theta = FreeMemory_oneD_double(tth.two_theta);
