@@ -62,11 +62,11 @@ void mjhp2theta_local_potential(TwoTheta *TTH, EnergyStep *ESTP, NumberGrid *GRD
  
   /*Allocate memory for large variables in this function*/
   ECON->rflc_local = AllocateMemory_twoD_double(ECON->rflc_local, nEstep, nrflc);
-  for (dE=0;dE<nEstep;dE++) {
-    for (n=0;n<nrflc;n++) {
-      ECON->rflc_local[dE][n] = 0.0;
-    }
-  }
+  //for (dE=0;dE<nEstep;dE++) {
+    //for (n=0;n<nrflc;n++) {
+      //ECON->rflc_local[dE][n] = 0.0;
+   // }
+ // }
   total_local = 0.0;
   
   printf( "\nCalculating Local Potential Energy:\n");

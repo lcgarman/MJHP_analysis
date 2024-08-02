@@ -46,6 +46,9 @@ void read_mjin_header(char filename[100], MottJonesConditions * MJC, FileCabinet
   MJC->jzH = AllocateMemory_oneD_int(MJC->jzH, ndts);
   MJC->jzK = AllocateMemory_oneD_int(MJC->jzK, ndts);
   MJC->jzL = AllocateMemory_oneD_int(MJC->jzL, ndts);
+  MJC->scanE_min = AllocateMemory_oneD_double(MJC->scanE_min, ndts);
+  MJC->scanE_mid = AllocateMemory_oneD_double(MJC->scanE_mid, ndts);
+  MJC->scanE_max = AllocateMemory_oneD_double(MJC->scanE_max, ndts);
  
   check=fscanf(mjin_file, "%s", strv);
   if (check==EOF) return;
@@ -60,15 +63,47 @@ void read_mjin_header(char filename[100], MottJonesConditions * MJC, FileCabinet
 	
   check=fscanf(mjin_file, "%s", strv);
   if (check==EOF) return;
-  fscanf(mjin_file, "%lf", &scanE_min);
-  fscanf(mjin_file, "%lf", &scanE_mid);
-  fscanf(mjin_file, "%lf", &scanE_max);
-  MJC->scanE_min = scanE_min;
-  MJC->scanE_mid = scanE_mid;
-  MJC->scanE_max = scanE_max;
-
+  for (n=0;n<ndts;n++) {
+	fscanf(mjin_file, "%lf", &scanE_min);
+	fscanf(mjin_file, "%lf", &scanE_mid);
+	fscanf(mjin_file, "%lf", &scanE_max);
+	MJC->scanE_min[n] = scanE_min;
+	MJC->scanE_mid[n] = scanE_mid;
+	MJC->scanE_max[n] = scanE_max;
+  }
+	
   fclose(mjin_file);
 } //END of readSS 
+
+void append_mjin(char filename[100], TwoTheta *TTH)
+{
+  FILE * mjin_file;
+  int nfind;
+  int n;
+
+  nfind = TTH->nrflc;
+
+  /*open the mjin file to be appended*/
+  printf("Appending %s\n", filename);
+  mjin_file=fopen(filename,"a"); /*open the filename in append/read mode*/
+  if(mjin_file==NULL) {
+    printf("%s not found. \n", filename);
+    exit(0);
+  }
+
+  /*print HKL indices into mjin file*/
+  fprintf(mjin_file, "no_HKL %d\n", nfind);
+  fprintf(mjin_file, "HKL\n");
+  for(n=0;n<nfind;n++) {
+    fprintf(mjin_file, "%d %d %d\n", TTH->rflc_H[n], TTH->rflc_K[n],  TTH->rflc_L[n]); 
+  }
+
+  fclose(mjin_file);
+  /*free variables*/
+  TTH->rflc_H = FreeMemory_oneD_int(TTH->rflc_H);
+  TTH->rflc_K = FreeMemory_oneD_int(TTH->rflc_K);
+  TTH->rflc_L = FreeMemory_oneD_int(TTH->rflc_L);
+}
 
 void print_mjhpHKL_energy(char filename[200], VectorIndices *VECT, EnergyStep *ESTP, UnitCell *UC, FileCabinet *FCAB, EnergyContribution *ECON)
 {

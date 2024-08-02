@@ -3,6 +3,8 @@
 
   void read_mjin_header(char filename[100], MottJonesConditions * MJC, FileCabinet* FCAB, FermiSphere* FS);
 
+  void append_mjin(char filename[100], TwoTheta *TTH);
+
   void print_mjhpHKL_energy(char filename[200], VectorIndices *VECT, EnergyStep * ESTP, UnitCell* UC, FileCabinet *FCAB, EnergyContribution * ECON);
 
 

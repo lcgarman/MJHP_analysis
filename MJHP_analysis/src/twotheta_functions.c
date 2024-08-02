@@ -9,6 +9,7 @@
 #include "structures.h"
 #include "allocate_memory.h"
 #include "twotheta_functions.h"
+#include "hkl_functions.h"
 
 void calculate_powder_pattern(FILE *flog, TwoTheta * TTH, BinaryGrid* BIN, NumberGrid* GRD, UnitCell* UC, Symmetry* SYM) 
 {
@@ -356,7 +357,7 @@ void symmetry_folded_reflections(FILE * flog, char filename[100], TwoTheta * TTH
 
 } //END of Symmetry_pxrd
 
-void print_reflections(char filename[200], TwoTheta * TTH)
+void print_reflections(char filename[200], TwoTheta * TTH, FermiSphere * FS)
 {
   FILE * frflc;
   int n;
@@ -373,6 +374,7 @@ void print_reflections(char filename[200], TwoTheta * TTH)
   }  
 
   fprintf(frflc, "nrflc %d\n", nrflc);
+  fprintf(frflc, "FS_angle %lf\n", FS->two_theta);
   /*print powder pattern */
   for (n=0;n<nrflc;n++) {
     intensity = TTH->F_hkl[n] * TTH->rflc_mult[n];
@@ -414,6 +416,7 @@ void read_reflections(char filename[200], TwoTheta * TTH)
   FILE * frflc;
   int n;
   int nrflc;
+  double twotheta_fs;
   int rflc_no;
   double d_hklv;
   double two_thetav;
@@ -436,6 +439,9 @@ void read_reflections(char filename[200], TwoTheta * TTH)
   fscanf(frflc, "%s", strv);
   fscanf(frflc, "%d", &nrflc);
   TTH->nrflc = nrflc;
+
+  fscanf(frflc, "%s", strv);
+  fscanf(frflc, "%lf", &twotheta_fs);
 
   /*allocate memroy for reflection information*/
   TTH->rflc_mult = AllocateMemory_oneD_int(TTH->rflc_mult, nrflc);
@@ -484,6 +490,94 @@ void read_reflections(char filename[200], TwoTheta * TTH)
   fclose(frflc);
 }//END of read in rflc file
   
+void search_reflection(char filename[200], MottJonesConditions * MJC, TwoTheta * TTH) 
+{
+  FILE * frflc;
+  int n;
+  int nrflc;
+  double twotheta_fs;
+  int rflc_no;
+  double d_hklv;
+  double two_thetav;
+  int rflc_Hv, rflc_Kv, rflc_Lv;
+  int* con_H;
+  int* con_K;
+  int* con_L;
+  int rflc_multv;
+  double F_hklv;
+  double intensity;
+  char strv[50];
+  double min_twotheta;
+  double max_twotheta;
+  int nfind;
+
+  Conventional con;
+  /*Printf Symmetrized kpts*/
+  printf("\nReading Reflection Information From: %s\n", filename);
+  frflc=fopen(filename,"r"); /*open the filename in append mode*/
+  if(frflc==NULL) {
+    printf("%s not found. \n", filename);
+    exit(0);
+  }  
+
+  fscanf(frflc, "%s", strv);
+  fscanf(frflc, "%d", &nrflc);
+  fscanf(frflc, "%s", strv);
+  fscanf(frflc, "%lf", &twotheta_fs);
+  /*find min and max 2theta to scan within*/
+  min_twotheta = twotheta_fs - 5.0;
+  max_twotheta = twotheta_fs + 5.0;
+  
+  /*allocate memory for HKL arrays*/
+  con_H = NULL;
+  con_K = NULL;
+  con_L = NULL;
+  con_H = AllocateMemory_oneD_int(con_H, nrflc);
+  con_K = AllocateMemory_oneD_int(con_K, nrflc);
+  con_L = AllocateMemory_oneD_int(con_L, nrflc);
+  
+  printf("Reflections in twotheta range (%lf to %lf):\n", min_twotheta, max_twotheta);
+  nfind = 0;
+  /*read powder pattern */
+  for (n=0;n<nrflc;n++) {
+    fscanf(frflc, "%d", &rflc_no);
+    fscanf(frflc, "%lf", &d_hklv);
+    fscanf(frflc, "%lf", &two_thetav);
+    fscanf(frflc, "%d %d %d ", &rflc_Hv, &rflc_Kv, &rflc_Lv);
+    fscanf(frflc, "%d", &rflc_multv);
+    fscanf(frflc, "%lf", &F_hklv);
+    fscanf(frflc, "%lf", &intensity);
+    
+    /*check if reflection is in range; print if it is*/
+    if ((two_thetav >= min_twotheta) && (two_thetav <= max_twotheta)) {
+      printf("\n\t%d\t %lf %lf %d %d %d %d %lf\n", n, d_hklv, two_thetav, rflc_Hv, rflc_Kv, rflc_Lv, rflc_multv, intensity);
+      Conventional con = HKL_convert_toP(MJC, rflc_Hv, rflc_Kv, rflc_Lv);
+      con_H[nfind] = con.H;      
+      con_K[nfind] = con.K;      
+      con_L[nfind] = con.L;      
+      nfind++;
+    }
+  }
+  
+  /*allocate memory for TTH->HKL arrays*/
+  TTH->rflc_H = AllocateMemory_oneD_int(TTH->rflc_H, nfind);
+  TTH->rflc_K = AllocateMemory_oneD_int(TTH->rflc_K, nfind);
+  TTH->rflc_L = AllocateMemory_oneD_int(TTH->rflc_L, nfind);
+  /*copy HKL indices into TTH struct*/
+  TTH->nrflc = nfind;
+  for (n=0;n<nfind;n++) {
+    TTH->rflc_H[n] = con_H[n];
+    TTH->rflc_K[n] = con_K[n];
+    TTH->rflc_L[n] = con_L[n];
+  }
+ 
+  fclose(frflc);
+  con_H = FreeMemory_oneD_int(con_H);
+  con_K = FreeMemory_oneD_int(con_K);
+  con_L = FreeMemory_oneD_int(con_L);
+
+}  //END of search_reflections 
+
 void concatinate_twotheta_potential(EnergyContribution * ECON, EnergyStep * ESTP, TwoTheta *TTH) 
 {
   int nEstep;

@@ -5,6 +5,7 @@
 #include "globals.h"
 #include "structures.h"
 #include "allocate_memory.h"
+#include "hkl_functions.h"
 
 void transform_HKL(MottJonesConditions * MJC) 
 {
@@ -285,3 +286,87 @@ void integrate_HKL_potential(EnergyContribution * ECON, EnergyStep * ESTP, Atomi
   printf( "\t iMJHP = %lf eV/atom\n", Eint_eV_peratom);
 
 }
+
+Conventional HKL_convert_toP(MottJonesConditions * MJC, int H, int K, int L)
+{
+  char lattice[10];
+  int len_lattice;
+  char center;
+  char primitive = 'P';
+  char bodycenter = 'I';
+  char facecenter = 'F';
+  char acenter = 'A';
+  char bcenter = 'B';
+  char ccenter = 'C';
+  int H_symm, K_symm, L_symm;
+  
+  Conventional con;
+  /*separating lattice variable. ie - "cP" -> "c" and "P"*/
+  strcpy(lattice, MJC->lattice);
+  len_lattice = strlen(lattice);
+  /*check lattice is right length*/
+  if (len_lattice > 2) printf("ERROR: length of lattice (%d) is too long.\n", len_lattice);
+  center = lattice[1];
+
+  /*Transform to primitive cell*/
+  if (center==primitive) {
+    printf("Already in Conventional Centering (P)\n");
+  }
+  else if (center==bodycenter) { 
+    printf("Transforming HKL: P->I\n");
+	H_symm = (0.0*H)+(1.0*K)+(1.0*L);
+	K_symm = (1.0*H)+(0.0*K)+(1.0*L);
+	L_symm = (1.0*H)+(1.0*K)+(0.0*L);
+    H = H_symm;
+    K = K_symm;
+    L = L_symm;
+  }
+  else if (center==facecenter) { 
+    printf("Transforming HKL: P->F\n");
+	H_symm = (-1.0*H)+(1.0*K)+(1.0*L);
+	K_symm = (1.0*H)+(-1.0*K)+(1.0*L);
+	L_symm = (1.0*H)+(1.0*K)+(-1.0*L);
+    H = H_symm;
+    K = K_symm;
+    L = L_symm;
+  }
+  else if (center==acenter) { 
+    printf("Transforming HKL: A->P\n");
+	H_symm = (1.0*H)+(0.0*K)+(0.0*L);
+	K_symm = (0.0*H)+(1.0*K)+(1.0*L);
+	L_symm = (0.0*H)+(-1.0*K)+(1.0*L);
+    H = H_symm;
+    K = K_symm;
+    L = L_symm;
+  }
+  else if (center==bcenter) { 
+    printf("Transforming HKL: P->B\n");
+	H_symm = (1.0*H)+(0.0*K)+(1.0*L);
+	K_symm = (0.0*H)+(1.0*K)+(0.0*L);
+	L_symm = (-1.0*H)+(0.0*K)+(1.0*L);
+    H = H_symm;
+    K = K_symm;
+    L = L_symm;
+  }
+  else if (center==ccenter) { 
+    printf("Transforming HKL: P->C\n");
+	H_symm = (1.0*H)+(1.0*K)+(0.0*L);
+	K_symm = (-1.0*H)+(1.0*K)+(0.0*L);
+	L_symm = (0.0*H)+(0.0*K)+(1.0*L);
+    H = H_symm;
+    K = K_symm;
+    L = L_symm;
+  }
+  else {
+    printf("ERROR: No Code written for %s\n", MJC->lattice);
+    printf("\t case sensitive (xY) \n");
+    exit(0);
+  }
+
+  con.H = H;
+  con.K = K;
+  con.L = L;
+  
+  return(con);
+} //END of primitive_to_conventional 
+

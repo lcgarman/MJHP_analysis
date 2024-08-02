@@ -92,6 +92,9 @@ void Initialize_MottJonesConditions(MottJonesConditions * MJC)
   MJC->Hpw = NULL;
   MJC->Kpw = NULL;
   MJC->Lpw = NULL;
+  MJC->scanE_min = NULL;
+  MJC->scanE_mid = NULL;
+  MJC->scanE_max = NULL;
 }
 
 void Initialize_TwoTheta(TwoTheta * TTH)
@@ -132,6 +135,8 @@ void Initialize_EnergyContribution(EnergyContribution * ECON)
 
 int* AllocateMemory_oneD_int(int *array, int dim1)
 {
+  int i;
+
   /*if array is already allocated leave this function*/
   if (array != NULL) {
     return array;
@@ -145,6 +150,8 @@ int* AllocateMemory_oneD_int(int *array, int dim1)
     exit(0);
   }
 
+  /*zero out memory*/
+  for (i=0;i<dim1;i++) array[i] = 0;
   /*return the array at end of function*/
   return array;
 } 
@@ -178,6 +185,13 @@ int** AllocateMemory_twoD_int(int **array, int dim1, int dim2)
       }
       free(array);
       exit(0);
+    }
+  }
+
+  /*zero out memory*/
+  for (i=0;i<dim1;i++) {
+    for (j=0;j<dim2;j++) {
+      array[i][j] = 0;
     }
   }
 
@@ -228,6 +242,15 @@ int*** AllocateMemory_threeD_int(int ***array, int dim1, int dim2, int dim3)
         free(array[i]);
         free(array);
 		exit(0);
+      }
+    }
+  }
+
+  /*zero out memory*/
+  for (i=0;i<dim1;i++) {
+    for (j=0;j<dim2;j++) {
+      for (k=0;k<dim3;k++) {
+        array[i][j][k] = 0;
       }
     }
   }
@@ -299,12 +322,24 @@ int**** AllocateMemory_fourD_int(int ****array, int dim1, int dim2, int dim3, in
     }
   }
 
+  /*zero out memory*/
+  for (i=0;i<dim1;i++) {
+    for (j=0;j<dim2;j++) {
+      for (k=0;k<dim3;k++) {
+        for (l=0;l<dim4;l++) {
+          array[i][j][k][l] = 0;
+        }
+      }
+    }
+  }
+
   /*return the array at end of function*/
   return array;
 } 
 
 double* AllocateMemory_oneD_double(double *array, int dim1)
 {
+  int i;
   /*if array is already allocated leave this function*/
   if (array != NULL) {
     return array;
@@ -317,6 +352,11 @@ printf("NOT NULL\n");
   if (array==NULL) {
     printf("ERROR: Memory Allocation Failed\n");
     exit(0);
+  }
+
+  /*zero out memory*/
+  for (i=0;i<dim1;i++) {
+	array[i] = 0;
   }
 
   /*return the array at end of function*/
@@ -352,6 +392,13 @@ double** AllocateMemory_twoD_double(double **array, int dim1, int dim2)
       }
       free(array);
       exit(0);
+    }
+  }
+
+  /*zero out memory*/
+  for (i=0;i<dim1;i++) {
+    for (j=0;j<dim2;j++) {
+	  array[i][j] = 0.0;
     }
   }
 
@@ -401,6 +448,15 @@ double*** AllocateMemory_threeD_double(double ***array, int dim1, int dim2, int 
         free(array[i]);
         free(array);
 		exit(0);
+      }
+    }
+  }
+
+  /*zero out memory*/
+  for (i=0;i<dim1;i++) {
+    for (j=0;j<dim2;j++) {
+      for (k=0;k<dim3;k++) {
+		array[i][j][k] = 0.0;
       }
     }
   }
@@ -469,6 +525,17 @@ double**** AllocateMemory_fourD_double(double ****array, int dim1, int dim2, int
           exit(0);
         }
 	  }
+    }
+  }
+
+  /*zero out memory*/
+  for (i=0;i<dim1;i++) {
+    for (j=0;j<dim2;j++) {
+      for (k=0;k<dim3;k++) {
+        for (l=0;l<dim4;l++) {
+		  array[i][j][k][l] = 0.0;
+        }
+      }
     }
   }
 

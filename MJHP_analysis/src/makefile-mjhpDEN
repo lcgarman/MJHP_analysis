@@ -5,7 +5,7 @@ LDFLAGS = -L/share/apps/dfprograms/fftw3/lib -Wl,-rpath,/usr/lib64
 LIBS = -lgsl -lm -lfftw3 -mcmodel=medium 
 
 # Source files
-SRCS = mjhpHKL_DENmain.c globals.c structures.c allocate_memory.c cell_parameters.c rwa_functions.c read_binary_abinit.c hkl_functions.c mjhpHKL_density.c 
+SRCS = mjhpHKL_DENmain.c globals.c structures.c allocate_memory.c cell_parameters.c rwa_functions.c read_binary_abinit.c hkl_functions.c mjhpHKL_density.c mjhpDOS_density.c 
 
 # Object files
 OBJS = $(SRCS:.c=.o)

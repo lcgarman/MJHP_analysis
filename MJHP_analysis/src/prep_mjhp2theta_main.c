@@ -14,6 +14,7 @@
 #include "fftw_functions.h"
 #include "recgrid_functions.h"
 #include "twotheta_functions.h"
+#include "hkl_functions.h"
 
 int main(int argc, char * argv[])
 {
@@ -42,7 +43,6 @@ int main(int argc, char * argv[])
   if (argc > 1) {
       //copy file string to inupt files
     strcpy(MJINfilename, argv[1]);
-printf("working\n");
   }
   else {
     printf("USAGE: prepare_mjhp2theta <*.mjin> ");
@@ -92,6 +92,9 @@ printf("working\n");
   /*Find Unit Cell parameters in real and reciprocal space*/
   Determine_CellParameters(&ucell, &grid);
 
+  /*calculate the Fermi sphere angle*/
+  Calculate_FermiDegree(&ucell, &fsph);
+
   /*define the HKL grid in reciprocal space*/
   find_HKLgrid_max(&grid); 
   prepare_HKLgrid(&grid);
@@ -109,7 +112,7 @@ printf("working\n");
   /*print total potential energy contributions*/ 
   strcat(RFLCfilename, ".rflc");
   fprintf(flog, "\nPrinting Reflection Information to %s\n", RFLCfilename);
-  print_reflections(RFLCfilename, &tth);
+  print_reflections(RFLCfilename, &tth, &fsph);
 
   /*rename modified abinit in file to original in filename*/
   remove(ABINfilename);

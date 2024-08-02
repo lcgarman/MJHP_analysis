@@ -13,6 +13,7 @@
 #include "rwa_functions.h"
 #include "hkl_functions.h"
 #include "mjhpHKL_density.h"
+#include "mjhpDOS_density.h"
 
 int main(int argc, char * argv[])
 {
@@ -67,9 +68,6 @@ int main(int argc, char * argv[])
   /*Read the mj file and store variables*/
   read_mjin_header(MJINfilename, &mjc, &fcab, &fsph);
   ndts = mjc.ndts;
-  sprintf(scanEmin_append, "%lf", mjc.scanE_min);
-  sprintf(scanEmid_append, "%lf", mjc.scanE_mid);
-  sprintf(scanEmax_append, "%lf", mjc.scanE_max);
 
   /*store file names*/
   strcpy(ABOfilename, fcab.ABOfilename);
@@ -121,6 +119,9 @@ int main(int argc, char * argv[])
 	sprintf(H_append, "%d", H_conventional);
 	sprintf(K_append, "%d", K_conventional);
 	sprintf(L_append, "%d", L_conventional);
+	sprintf(scanEmin_append, "%0.3f", mjc.scanE_min[n]);
+	sprintf(scanEmid_append, "%0.3f", mjc.scanE_mid[n]);
+	sprintf(scanEmax_append, "%0.3f", mjc.scanE_max[n]);
     strcpy(MJXSFfilename_N, MJXSFfilename);
 	strcat(MJXSFfilename_N, "_");
 	strcat(MJXSFfilename_N, H_append);
@@ -139,26 +140,29 @@ int main(int argc, char * argv[])
 	strcat(MJXSFfilename_N2, ".xsf");
 	
 	/* FIRST calc density from minE to 0*/
-	vect.scanE_start = mjc.scanE_min;
-	vect.scanE_stop = mjc.scanE_mid;
+	vect.scanE_start = mjc.scanE_min[n];
+	vect.scanE_stop = mjc.scanE_mid[n];
 	printf("\nScanning Energy in Range: %lf to %lf (eV)\n", vect.scanE_start, vect.scanE_stop);
-	printf("\nScanning Energy in Range: %lf to %lf (eV)\n", vect.scanE_start, vect.scanE_stop);
-	/*calculate the local potential energy contribution*/
+    /*calculate mjhp density in energy range*/
 	mjhpHKL_density(&grid, &bin, &wave, &symm, &ucell, &vect);
+    /*find TOTAL density in energy range*/
+    mjhpDOS_density(&grid, &wave, &symm, &ucell, &vect);
 	/*print total potential energy contributions*/ 
 	printf("\nPrinting Mott-Jones Density to: %s\n", MJXSFfilename_N1);
 	print_XSF(MJXSFfilename_N1, &ucell, &grid, &bin, &atom);
 	
 	/* SECOND calc density from 0 maxE*/
-	vect.scanE_start = mjc.scanE_mid;
-	vect.scanE_stop = mjc.scanE_max;
+	vect.scanE_start = mjc.scanE_mid[n];
+	vect.scanE_stop = mjc.scanE_max[n];
 	printf("\nScanning Energy in Range: %lf to %lf (eV)\n", vect.scanE_start, vect.scanE_stop);
-	printf("\nScanning Energy in Range: %lf to %lf (eV)\n", vect.scanE_start, vect.scanE_stop);
-	/*calculate the local potential energy contribution*/
+    /*calculate mjhp density in energy range*/
 	mjhpHKL_density(&grid, &bin, &wave, &symm, &ucell, &vect);
+    /*find TOTAL density in energy range*/
+    mjhpDOS_density(&grid, &wave, &symm, &ucell, &vect);
 	/*print total potential energy contributions*/ 
 	printf("\nPrinting Mott-Jones Density to: %s\n", MJXSFfilename_N2);
 	print_XSF(MJXSFfilename_N2, &ucell, &grid, &bin, &atom);
+
 
 	/*free HKL variables for next iteration*/
 	vect.H_arr = FreeMemory_oneD_int(vect.H_arr);
@@ -171,6 +175,12 @@ int main(int argc, char * argv[])
 	
   /*Free allocated memory not needed anymore*/
   printf("\nFree Allocated Variables\n");
+  mjc.scanE_min = FreeMemory_oneD_double(mjc.scanE_min);
+  mjc.scanE_mid = FreeMemory_oneD_double(mjc.scanE_mid);
+  mjc.scanE_max = FreeMemory_oneD_double(mjc.scanE_max);
+  mjc.jzH = FreeMemory_oneD_int(mjc.jzH);
+  mjc.jzK = FreeMemory_oneD_int(mjc.jzK);
+  mjc.jzL = FreeMemory_oneD_int(mjc.jzL);
   FreeMemory_Wavefunctions(&wave);
   wave.npw = FreeMemory_oneD_int(wave.npw);
   symm.symrel = FreeMemory_threeD_int(symm.symrel, 3, 3);

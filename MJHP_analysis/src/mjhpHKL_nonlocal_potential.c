@@ -135,7 +135,7 @@ void mjhpHKL_nonlocal_potential(VectorIndices *VECT, NumberGrid* GRD, EnergyStep
   Plm = NULL;
   /*Allocate memory for large variables in this function*/
   ECON->nonlocal = AllocateMemory_oneD_double(ECON->nonlocal, nEstep);
-  for (dE=0;dE<nEstep;dE++) ECON->nonlocal[dE] = 0.0;
+  //for (dE=0;dE<nEstep;dE++) ECON->nonlocal[dE] = 0.0;
   l_max_type = AllocateMemory_oneD_int(l_max_type, ntypat);
   i_max_type = AllocateMemory_twoD_int(i_max_type, ntypat, 5);
   ph = AllocateMemory_fourD_double(ph, 4, 4, 5, ntypat);

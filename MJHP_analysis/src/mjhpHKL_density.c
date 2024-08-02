@@ -28,16 +28,13 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
   double ang_pw2x, ang_pw2y, ang_pw2z;
   double mag_pw1, mag_pw2;
   double minr, maxr;
-  double mag_diff;
   int h1, k1, l1;
   int hpos, kpos, lpos;
   int ngfftx, ngffty, ngfftz;
   int NGX, NGY, NGZ;
   int nHKL;
   int MJ_H, MJ_K, MJ_L;
-  double exponent;
-  double broad;
-  double sigma;
+  int HKL_mult;
   double wtk;
   gsl_complex c1;
   double coeff_total;
@@ -77,7 +74,6 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
   NGX = GRD->ngfftx+1;
   NGY = GRD->ngffty+1;
   NGZ = GRD->ngfftz+1;
-  sigma = SIGMA;
   coeff_total = 0.0;
   real_grid = NULL;
   sym_real_grid = NULL;
@@ -99,45 +95,47 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
   printf("\nCalculating Electron Density\n");
   /*Begin Calculating Electron density from HKL*/
   for (kptno=0;kptno<nkpt;kptno++) { 
-    printf("kpt %d %lf %lf %lf kmult=%d\n", kptno, WFK->kpt[0][kptno], WFK->kpt[1][kptno], WFK->kpt[2][kptno], SYM->mult[kptno]);
+    printf( "kpt %d \t%lf %lf %lf \tmult=%d\n", kptno, WFK->kpt[0][kptno], WFK->kpt[1][kptno], WFK->kpt[2][kptno], SYM->mult[kptno]);
 	npw = WFK->npw[kptno];
 
 	for (band=0;band<nband;band++) {
-      /*Scanning energy within -4 eV to 4eV range*/
-      bandE = (WFK->eigen[kptno][band] - fermi)*HATOEV; 
-      if ((bandE > scanE_stop) || (bandE < scanE_start)) continue; //only scan 0toX
+	  /*Scanning energy within minE eV to maxE eV range*/
+	  bandE = (WFK->eigen[kptno][band] - fermi)*HATOEV; 
+	  if ((bandE > scanE_stop) || (bandE < scanE_start)) continue; 
+      printf("\t\tband = %d E = %lf\n", band, bandE);
 	  
+	  HKL_mult = 0;
 	  /*zero out grid_in array*/
 	  for (h1=0;h1<ngfftx;h1++) {
 		for (k1=0;k1<ngffty;k1++) {
 		  for (l1=0;l1<ngfftz;l1++) {
-			i_index = h1*ngfftz*ngffty+k1*ngfftz+l1;
-			grid_in[i_index][REAL] = 0.0;
-			grid_in[i_index][IMAG] = 0.0;
+		    i_index = h1*ngfftz*ngffty+k1*ngfftz+l1;
+		    grid_in[i_index][REAL] = 0.0;
+		    grid_in[i_index][IMAG] = 0.0;
 		  }
-		}
+	    }
 	  }
 
 	  for (pw1=0;pw1<npw;pw1++) {
-        /*Define first planwave coords*/ 
+		/*Define first planwave coords*/ 
 		h1 = WFK->kg[kptno][pw1][0];
 		k1 = WFK->kg[kptno][pw1][1];
 		l1 = WFK->kg[kptno][pw1][2];
-        /*find |k1+Ghkl| */
-        pw1_x = WFK->kpt[0][kptno] + (double) h1;
-        pw1_y = WFK->kpt[1][kptno] + (double) k1;
-        pw1_z = WFK->kpt[2][kptno] + (double) l1;
-        ang_pw1x = pw1_x*UC->ang_ax_star + pw1_y*UC->ang_bx_star + pw1_z*UC->ang_cx_star;
-        ang_pw1y = pw1_x*UC->ang_ay_star + pw1_y*UC->ang_by_star + pw1_z*UC->ang_cy_star;
-        ang_pw1z = pw1_x*UC->ang_az_star + pw1_y*UC->ang_bz_star + pw1_z*UC->ang_cz_star;
+		/*find |k1+Ghkl| */
+		pw1_x = WFK->kpt[0][kptno] + (double) h1;
+		pw1_y = WFK->kpt[1][kptno] + (double) k1;
+		pw1_z = WFK->kpt[2][kptno] + (double) l1;
+		ang_pw1x = pw1_x*UC->ang_ax_star + pw1_y*UC->ang_bx_star + pw1_z*UC->ang_cx_star;
+		ang_pw1y = pw1_x*UC->ang_ay_star + pw1_y*UC->ang_by_star + pw1_z*UC->ang_cy_star;
+		ang_pw1z = pw1_x*UC->ang_az_star + pw1_y*UC->ang_bz_star + pw1_z*UC->ang_cz_star;
 		mag_pw1 = sqrt(ang_pw1x*ang_pw1x + ang_pw1y*ang_pw1y + ang_pw1z*ang_pw1z);
-        /*continue if |pw1|>maxr or |pw1|<minr*/
-        if ((mag_pw1>maxr)||(mag_pw1<minr)) continue;
-
-        for(j=0;j<nHKL;j++) {
-          MJ_H =  VECT->H_arr[j];
-          MJ_K =  VECT->K_arr[j];
-          MJ_L =  VECT->L_arr[j];
+		/*continue if |pw1|>maxr or |pw1|<minr*/
+		if ((mag_pw1>maxr)||(mag_pw1<minr)) continue;
+		
+		for(j=0;j<nHKL;j++) {
+		  MJ_H =  VECT->H_arr[j];
+		  MJ_K =  VECT->K_arr[j];
+		  MJ_L =  VECT->L_arr[j];
 		  /*find pw2 = pw1-HKL*/
 		  pw2_x = pw1_x - (double) MJ_H; 
 		  pw2_y = pw1_y - (double) MJ_K; 
@@ -146,13 +144,15 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
 		  ang_pw2y = pw2_x*UC->ang_ay_star + pw2_y*UC->ang_by_star + pw2_z*UC->ang_cy_star;
 		  ang_pw2z = pw2_x*UC->ang_az_star + pw2_y*UC->ang_bz_star + pw2_z*UC->ang_cz_star;
 		  mag_pw2 = sqrt(ang_pw2x*ang_pw2x + ang_pw2y*ang_pw2y + ang_pw2z*ang_pw2z);
-          /*if both pw1 and pw2 lie in shell and pw1-pw2=HKL*/
-          if ((mag_pw2>maxr)||(mag_pw2<minr)) continue;
-		  printf("\tH K L = %d %d %d \n", MJ_H, MJ_K, MJ_L); 
+		  /*if both pw1 and pw2 lie in shell and pw1-pw2=HKL*/
+		  if ((mag_pw2>maxr)||(mag_pw2<minr)) continue;
+		  HKL_mult++;
+		  printf("\tH K L = %d %d %d  mult=%d\n", MJ_H, MJ_K, MJ_L, HKL_mult); 
 		  printf("\t\t pw1 = %lf %lf %lf |pw1|=%lf\n", pw1_x, pw1_y, pw1_z, mag_pw1);
 		  printf("\t\t pw2 = %lf %lf %lf |pw2|=%lf\n", pw2_x, pw2_y, pw2_z, mag_pw2);
-
-          /*make a hkl grid needs to be all (+) numbers*/
+		}
+		  
+		  /*make a hkl grid needs to be all (+) numbers*/
 		  if (h1<0) hpos = h1 + ngfftx;
 		  else hpos = h1;
 		  if (k1<0) kpos = k1 + ngffty;
@@ -160,16 +160,10 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
 		  if (l1<0) lpos = l1 + ngfftz;
 		  else lpos = l1;
 		  i_index = hpos*ngffty*ngfftz+kpos*ngfftz+lpos;
-
-		  /*calculate broadening*/
-//			mag_diff = mag_pw1 - mag_pw2;
-//			exponent = -(mag_diff*mag_diff)/sigma;
-//			broad = exp(exponent);
-//          printf("\t\tbroadening = %lf\n", broad);
-
+		  
+          /*fill fft grid with wavefunction coefficients*/
 		  grid_in[i_index][REAL] = WFK->cg[kptno][band][pw1][0];
 		  grid_in[i_index][IMAG] = -WFK->cg[kptno][band][pw1][1];
-		}
 	  }
       fftw_execute(wfk_den_plan);
 
@@ -185,8 +179,8 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
             re_grid = grid_out[o_index][REAL];
             im_grid = grid_out[o_index][IMAG];
             c1 = gsl_complex_rect(re_grid, im_grid);
-            real_grid[jx][jy][jz] += wtk*occ*gsl_complex_abs2(c1)/UC->bohr_cellV;
-            coeff_total += wtk*occ*gsl_complex_abs2(c1)/UC->bohr_cellV;
+            real_grid[jx][jy][jz] += HKL_mult*wtk*occ*gsl_complex_abs2(c1)/UC->bohr_cellV;
+            coeff_total += HKL_mult*wtk*occ*gsl_complex_abs2(c1)/UC->bohr_cellV;
 		  }  /*END jz->ngfftz loop*/
 		}  /*END jy->ngffty loop*/
 	  }  /*END jz->ngfftz loop*/

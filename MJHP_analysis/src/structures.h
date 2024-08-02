@@ -146,9 +146,9 @@ typedef struct {
   int* Hpw;
   int* Kpw;
   int* Lpw;
-  double scanE_min;
-  double scanE_mid;
-  double scanE_max;
+  double* scanE_min;
+  double* scanE_mid;
+  double* scanE_max;
 } MottJonesConditions;
 
 typedef struct {
@@ -185,9 +185,9 @@ typedef struct {
   double** rflc_total;
 } EnergyContribution;
 
-  typedef struct {
-    char *search;
-    char *replace;
-  } Modification;
+typedef struct {
+  char *search;
+  char *replace;
+} Modification;
 
 #endif

@@ -17,6 +17,7 @@
 #include "twotheta_functions.h"
 #include "mjhp2theta_local_potential.h"
 #include "mjhp2theta_nonlocal_potential.h"
+#include "hkl_functions.h"
 
 int main(int argc, char * argv[])
 {

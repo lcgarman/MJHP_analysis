@@ -5,7 +5,7 @@ LDFLAGS = -L/share/apps/dfprograms/fftw3/lib -Wl,-rpath,/usr/lib64
 LIBS = -lgsl -lm -lfftw3 -mcmodel=medium 
 
 # Source files
-SRCS = prep_mjhp2theta_main.c globals.c structures.c allocate_memory.c cell_parameters.c rwa_functions.c read_binary_abinit.c fftw_functions.c recgrid_functions.c twotheta_functions.c  
+SRCS = prep_mjhp2theta_main.c globals.c structures.c allocate_memory.c cell_parameters.c rwa_functions.c read_binary_abinit.c fftw_functions.c recgrid_functions.c twotheta_functions.c hkl_functions.c 
 
 # Object files
 OBJS = $(SRCS:.c=.o)
