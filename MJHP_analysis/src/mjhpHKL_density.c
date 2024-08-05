@@ -35,6 +35,10 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
   int nHKL;
   int MJ_H, MJ_K, MJ_L;
   int HKL_mult;
+  double sigma;
+  double mag_diff;
+  double exponent;
+  double broad;
   double wtk;
   gsl_complex c1;
   double coeff_total;
@@ -74,6 +78,7 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
   NGX = GRD->ngfftx+1;
   NGY = GRD->ngffty+1;
   NGZ = GRD->ngfftz+1;
+  sigma = SIGMA;
   coeff_total = 0.0;
   real_grid = NULL;
   sym_real_grid = NULL;
@@ -102,7 +107,7 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
 	  /*Scanning energy within minE eV to maxE eV range*/
 	  bandE = (WFK->eigen[kptno][band] - fermi)*HATOEV; 
 	  if ((bandE > scanE_stop) || (bandE < scanE_start)) continue; 
-      printf("\t\tband = %d E = %lf\n", band, bandE);
+      printf("\tband = %d E = %lf\n", band, bandE);
 	  
 	  HKL_mult = 0;
 	  /*zero out grid_in array*/
@@ -150,7 +155,12 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
 		  printf("\tH K L = %d %d %d  mult=%d\n", MJ_H, MJ_K, MJ_L, HKL_mult); 
 		  printf("\t\t pw1 = %lf %lf %lf |pw1|=%lf\n", pw1_x, pw1_y, pw1_z, mag_pw1);
 		  printf("\t\t pw2 = %lf %lf %lf |pw2|=%lf\n", pw2_x, pw2_y, pw2_z, mag_pw2);
-		}
+		  /*calculate broadening*/
+		  mag_diff = mag_pw1 - mag_pw2;
+		  exponent = -(mag_diff*mag_diff)/sigma;
+		  broad = exp(exponent);
+		  printf( "\t\tbroadening = %lf\n", broad);
+	    }
 		  
 		  /*make a hkl grid needs to be all (+) numbers*/
 		  if (h1<0) hpos = h1 + ngfftx;
@@ -179,8 +189,8 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
             re_grid = grid_out[o_index][REAL];
             im_grid = grid_out[o_index][IMAG];
             c1 = gsl_complex_rect(re_grid, im_grid);
-            real_grid[jx][jy][jz] += HKL_mult*wtk*occ*gsl_complex_abs2(c1)/UC->bohr_cellV;
-            coeff_total += HKL_mult*wtk*occ*gsl_complex_abs2(c1)/UC->bohr_cellV;
+            real_grid[jx][jy][jz] += HKL_mult*broad*wtk*occ*gsl_complex_abs2(c1)/UC->bohr_cellV;
+            coeff_total += HKL_mult*broad*wtk*occ*gsl_complex_abs2(c1)/UC->bohr_cellV;
 		  }  /*END jz->ngfftz loop*/
 		}  /*END jy->ngffty loop*/
 	  }  /*END jz->ngfftz loop*/
@@ -199,12 +209,12 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
 
   /*symmeterize the density grid in real space*/
   symm_error_flag = 0;
-  for(jx=0;jx<ngfftx;jx++) {
-	xf = (double)jx/(double)ngfftx;
+  for(jz=0;jz<ngfftz;jz++) {
+	zf = (double)jz/(double)ngfftz;
 	for(jy=0;jy<ngffty;jy++) {
 	  yf = (double)jy/(double)ngffty;
-	  for(jz=0;jz<ngfftz;jz++) {
-		zf = (double)jz/(double)ngfftz;
+      for(jx=0;jx<ngfftx;jx++) {
+	    xf = (double)jx/(double)ngfftx;
 	    for(j=0;j<nsym;j++) {
 	      xf2 = (double)SYM->symrel[0][0][j]*xf + (double)SYM->symrel[0][1][j]*yf + (double)SYM->symrel[0][2][j]*zf + SYM->tnons[0][j];
 	      yf2 = (double)SYM->symrel[1][0][j]*xf + (double)SYM->symrel[1][1][j]*yf + (double)SYM->symrel[1][2][j]*zf + SYM->tnons[1][j];
@@ -248,9 +258,9 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
   }
 
   coeff_total = 0.0;
-  for(jx=0;jx<ngfftx;jx++) {
+  for(jz=0;jz<ngfftz;jz++) {
     for(jy=0;jy<ngffty;jy++) {
-	  for(jz=0;jz<ngfftz;jz++) {
+      for(jx=0;jx<ngfftx;jx++) {
         BIN->real_grid[jx][jy][jz] = sym_real_grid[jx][jy][jz];
         coeff_total += BIN->real_grid[jx][jy][jz];
       }
@@ -259,9 +269,9 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
   printf("Total Normalized MJ Density %lf\n", coeff_total*UC->voxelV);
 
   /*rewrap grid so jxyz[max] = jxyz[0]*/
-  for(jx=0;jx<NGX;jx++) {
+  for(jz=0;jz<NGZ;jz++) {
     for(jy=0;jy<NGY;jy++) {
-	  for(jz=0;jz<NGZ;jz++) {
+      for(jx=0;jx<NGX;jx++) {
         if (jx==ngfftx) BIN->real_grid[jx][jy][jz] = BIN->real_grid[0][jy][jz];
         if (jy==ngffty) BIN->real_grid[jx][jy][jz] = BIN->real_grid[jx][0][jz];
         if (jz==ngfftz) BIN->real_grid[jx][jy][jz] = BIN->real_grid[jx][jy][0];

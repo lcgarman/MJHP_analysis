@@ -343,9 +343,9 @@ void print_XSF(char filename[200], UnitCell* UC, NumberGrid* GRD, BinaryGrid* BI
   fprintf(fxsf, "\t%.10f\t%.10f\t%.10f\n", UC->ang_bx, UC->ang_by, UC->ang_bz); 
   fprintf(fxsf, "\t%.10f\t%.10f\t%.10f\n", UC->ang_cx, UC->ang_cy, UC->ang_cz); 
   line_counter=0; 
-  for(jz=0;jz<(NGZ);jz++) {
-    for(jy=0;jy<(NGY);jy++) {
-      for(jx=0;jx<(NGX);jx++) {
+  for(jz=0;jz<NGZ;jz++) {
+    for(jy=0;jy<NGY;jy++) {
+      for(jx=0;jx<NGX;jx++) {
         line_counter++;
         fprintf(fxsf, "\t%.10lf" , BIN->real_grid[jx][jy][jz]);
         if(line_counter==6) {
