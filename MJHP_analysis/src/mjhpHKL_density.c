@@ -162,18 +162,19 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
 		  printf( "\t\tbroadening = %lf\n", broad);
 	    }
 		  
-		  /*make a hkl grid needs to be all (+) numbers*/
-		  if (h1<0) hpos = h1 + ngfftx;
-		  else hpos = h1;
-		  if (k1<0) kpos = k1 + ngffty;
-		  else kpos = k1;
-		  if (l1<0) lpos = l1 + ngfftz;
-		  else lpos = l1;
-		  i_index = hpos*ngffty*ngfftz+kpos*ngfftz+lpos;
+		/*make a hkl grid needs to be all (+) numbers*/
+		if (h1<0) hpos = h1 + ngfftx;
+		else hpos = h1;
+		if (k1<0) kpos = k1 + ngffty;
+		else kpos = k1;
+		if (l1<0) lpos = l1 + ngfftz;
+		else lpos = l1;
+		i_index = hpos*ngfftz*ngffty+kpos*ngfftz+lpos;
 		  
-          /*fill fft grid with wavefunction coefficients*/
-		  grid_in[i_index][REAL] = WFK->cg[kptno][band][pw1][0];
-		  grid_in[i_index][IMAG] = -WFK->cg[kptno][band][pw1][1];
+		/*fill fft grid with wavefunction coefficients*/
+		grid_in[i_index][REAL] = WFK->cg[kptno][band][pw1][0];
+		grid_in[i_index][IMAG] = -WFK->cg[kptno][band][pw1][1];
+
 	  }
       fftw_execute(wfk_den_plan);
 
@@ -209,12 +210,12 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
 
   /*symmeterize the density grid in real space*/
   symm_error_flag = 0;
-  for(jz=0;jz<ngfftz;jz++) {
-	zf = (double)jz/(double)ngfftz;
+  for(jx=0;jx<ngfftx;jx++) {
+	xf = (double)jx/(double)ngfftx;
 	for(jy=0;jy<ngffty;jy++) {
 	  yf = (double)jy/(double)ngffty;
-      for(jx=0;jx<ngfftx;jx++) {
-	    xf = (double)jx/(double)ngfftx;
+	  for(jz=0;jz<ngfftz;jz++) {
+		zf = (double)jz/(double)ngfftz;
 	    for(j=0;j<nsym;j++) {
 	      xf2 = (double)SYM->symrel[0][0][j]*xf + (double)SYM->symrel[0][1][j]*yf + (double)SYM->symrel[0][2][j]*zf + SYM->tnons[0][j];
 	      yf2 = (double)SYM->symrel[1][0][j]*xf + (double)SYM->symrel[1][1][j]*yf + (double)SYM->symrel[1][2][j]*zf + SYM->tnons[1][j];
@@ -245,7 +246,8 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
 	      if(fabs((double) ix-ix_d) > 0.001) symm_error_flag = 1;
 	      if(fabs((double) iy-iy_d) > 0.001) symm_error_flag = 1;
 	      if(fabs((double) iz-iz_d) > 0.001) symm_error_flag = 1;
-	      ix = ix % ngfftx; /*remainder function %*/
+          /*remainder of i/ngfft to ensure i is within range (0,ngfft-1)*/
+	      ix = ix % ngfftx; 
 	      iy = iy % ngffty;
 	      iz = iz % ngfftz;
 	      sym_real_grid[ix][iy][iz] += real_grid[jx][jy][jz]/nsym;
@@ -258,9 +260,9 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
   }
 
   coeff_total = 0.0;
-  for(jz=0;jz<ngfftz;jz++) {
+  for(jx=0;jx<ngfftx;jx++) {
     for(jy=0;jy<ngffty;jy++) {
-      for(jx=0;jx<ngfftx;jx++) {
+	  for(jz=0;jz<ngfftz;jz++) {
         BIN->real_grid[jx][jy][jz] = sym_real_grid[jx][jy][jz];
         coeff_total += BIN->real_grid[jx][jy][jz];
       }
@@ -269,9 +271,9 @@ void mjhpHKL_density(NumberGrid *GRD, BinaryGrid *BIN, Wavefunction *WFK, Symmet
   printf("Total Normalized MJ Density %lf\n", coeff_total*UC->voxelV);
 
   /*rewrap grid so jxyz[max] = jxyz[0]*/
-  for(jz=0;jz<NGZ;jz++) {
+  for(jx=0;jx<NGX;jx++) {
     for(jy=0;jy<NGY;jy++) {
-      for(jx=0;jx<NGX;jx++) {
+	  for(jz=0;jz<NGZ;jz++) {
         if (jx==ngfftx) BIN->real_grid[jx][jy][jz] = BIN->real_grid[0][jy][jz];
         if (jy==ngffty) BIN->real_grid[jx][jy][jz] = BIN->real_grid[jx][0][jz];
         if (jz==ngfftz) BIN->real_grid[jx][jy][jz] = BIN->real_grid[jx][jy][0];

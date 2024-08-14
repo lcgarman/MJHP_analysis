@@ -288,7 +288,7 @@ if(npwv>max_npw) max_npw = npwv;
 	SYM->tnons[1][j]=tnons_y;
     fread(&tnons_z, sizeof(double), 1, fab);
 	SYM->tnons[2][j]=tnons_z;
-    //printf("%d\n\t%lf %lf %lf\n", j, tnons_x, tnons_y, tnons_z);
+//    printf("%d\n\t%lf %lf %lf\n", j, tnons_x, tnons_y, tnons_z);
   }
   for(j=0;j<(ntypat);j++) {
     fread(&znucltypatv, sizeof(double), 1, fab);

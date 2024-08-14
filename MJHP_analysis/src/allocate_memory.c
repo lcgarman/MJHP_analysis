@@ -590,6 +590,15 @@ gsl_complex*** AllocateMemory_threeD_complex(gsl_complex ***array, int dim1, int
     }
   }
 
+  for (i=0;i<dim1;i++) {
+    for (j=0;j<dim2;j++) {
+      for (k=0;k<dim3;k++) {
+        GSL_REAL(array[i][j][k]) = 0.0;
+        GSL_IMAG(array[i][j][k]) = 0.0;
+      }
+    }
+  }
+        
   /*return the array at end of function*/
   return array;
 } 
@@ -767,7 +776,7 @@ void AllocateMemory_Wavefunctions(Wavefunction* WFK)
   int nkpt;
   int nband;
   int npw;
-  int i, j, k;
+  int i, j, k, l;
 
   nkpt = WFK->nkpt;
   nband = WFK->nband;
@@ -796,6 +805,17 @@ void AllocateMemory_Wavefunctions(Wavefunction* WFK)
 	printf("ERROR: Memory Allocation Failed for Wavefunction Coefficients (cg) \n");
     exit(0);
   } 
+  
+  for (i=0;i<nkpt;i++) {
+    npw = WFK->npw[i];
+    for (j=0;j<nband;j++) {
+      for (k=0;k<npw;k++) {
+        for (l=0;l<2;l++) {
+          WFK->cg[i][j][k][l] = 0.0;
+		}
+	  }
+	}
+  }
 
   /*Allocating Memory for Reduced plane wave Coordinates (kg)*/
   WFK->kg = malloc(nkpt * sizeof(int**));
@@ -809,6 +829,15 @@ void AllocateMemory_Wavefunctions(Wavefunction* WFK)
   if (WFK->kg == NULL) {
 	printf("\nERROR: Memory Allocation Failed for PW Coordinates (kg) \n");
     exit(0);
+  }
+  
+  for (i=0;i<nkpt;i++) {
+    npw = WFK->npw[i];
+    for (k=0;k<npw;k++) {
+      for (l=0;l<3;l++) {
+        WFK->kg[i][k][l] = 0.0;
+      }
+    }
   }
   
 }

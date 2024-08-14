@@ -287,6 +287,7 @@ void integrate_HKL_potential(EnergyContribution * ECON, EnergyStep * ESTP, Atomi
 
 }
 
+
 Conventional HKL_convert_toP(MottJonesConditions * MJC, int H, int K, int L)
 {
   char lattice[10];

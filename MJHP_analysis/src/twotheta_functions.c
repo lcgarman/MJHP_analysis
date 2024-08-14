@@ -528,6 +528,8 @@ void search_reflection(char filename[200], MottJonesConditions * MJC, TwoTheta *
   min_twotheta = twotheta_fs - 5.0;
   max_twotheta = twotheta_fs + 5.0;
   
+max_twotheta = 60;
+min_twotheta = 0;
   /*allocate memory for HKL arrays*/
   con_H = NULL;
   con_K = NULL;
