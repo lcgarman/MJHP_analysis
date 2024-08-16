@@ -11,7 +11,7 @@
 
   void read_reflections(char filename[200], TwoTheta * TTH);
 
-  void search_reflection(char filename[200], MottJonesConditions * MJC, TwoTheta * TTH); 
+  void search_reflection(char filename[200], MottJonesConditions * MJC, TwoTheta * TTH, double min_twotheta, double max_twotheta);
 
   void concatinate_twotheta_potential(EnergyContribution * ECON, EnergyStep * ESTP, TwoTheta *TTH); 
 

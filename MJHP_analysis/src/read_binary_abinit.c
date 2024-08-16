@@ -309,7 +309,7 @@ if(npwv>max_npw) max_npw = npwv;
 	//printf("kpt: %lf %lf %lf\tmult = %d\t%d\n", WFK->kpt[0][j], WFK->kpt[1][j], WFK->kpt[2][j], SYM->mult[j], mult_tot);
   }
   SYM->mult_tot = mult_tot;
-  printf("Total nkpts = %d\n",  mult_tot);
+//  printf("Total nkpts = %d\n",  mult_tot);
   fread(&j, sizeof(int), 1, fab);
 
   for(k=0; k<(npsp);k++) {

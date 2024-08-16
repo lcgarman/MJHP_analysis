@@ -183,10 +183,10 @@ void read_mjhpHKL_energy(char filename[100], EnergyStep *ESTP, UnitCell *UC, Fil
   fscanf(fhkl, "%lf\t%lf\t%lf\n", &UC->ang_cx_star, &UC->ang_cy_star, &UC->ang_cz_star);  
   fscanf(fhkl, "%s\n", vstr);
   fscanf(fhkl, "%d \n", &nEstep);
-  ESTP->nEstep = nEstep;;
-printf("NESTEP = %d\n", ESTP->nEstep);
+  ESTP->nEstep = nEstep;
   fscanf(fhkl, "%s\n", vstr);
   fscanf(fhkl, " %lf\n", &Elow);
+  ESTP->bandE_min = Elow/(double)EMESH;
   fscanf(fhkl, "%s\n", vstr);
   fscanf(fhkl, " %d\n", &emesh);
   fscanf(fhkl, "%s\n", vstr);

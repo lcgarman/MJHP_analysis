@@ -7,11 +7,9 @@
 
   void print_mjhpHKL_energy(char filename[200], VectorIndices *VECT, EnergyStep * ESTP, UnitCell* UC, FileCabinet *FCAB, EnergyContribution * ECON);
 
-
   void read_mjhpHKL_energy(char filename[100], EnergyStep *ESTP, UnitCell *UC, FileCabinet *FCAB, EnergyContribution *ECON);
 
   void concatinate_hkl_grids(EnergyContribution * ECON, EnergyStep * ESTP); 
-
 
   void print_mjhp2theta_energy(char filename[200], TwoTheta *TTH, EnergyStep * ESTP, UnitCell* UC, FileCabinet *FCAB, EnergyContribution * ECON, FermiSphere *FS);
 

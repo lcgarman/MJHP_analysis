@@ -490,7 +490,7 @@ void read_reflections(char filename[200], TwoTheta * TTH)
   fclose(frflc);
 }//END of read in rflc file
   
-void search_reflection(char filename[200], MottJonesConditions * MJC, TwoTheta * TTH) 
+void search_reflection(char filename[200], MottJonesConditions * MJC, TwoTheta * TTH, double min_twotheta, double max_twotheta) 
 {
   FILE * frflc;
   int n;
@@ -507,8 +507,6 @@ void search_reflection(char filename[200], MottJonesConditions * MJC, TwoTheta *
   double F_hklv;
   double intensity;
   char strv[50];
-  double min_twotheta;
-  double max_twotheta;
   int nfind;
 
   Conventional con;
@@ -524,12 +522,7 @@ void search_reflection(char filename[200], MottJonesConditions * MJC, TwoTheta *
   fscanf(frflc, "%d", &nrflc);
   fscanf(frflc, "%s", strv);
   fscanf(frflc, "%lf", &twotheta_fs);
-  /*find min and max 2theta to scan within*/
-  min_twotheta = twotheta_fs - 5.0;
-  max_twotheta = twotheta_fs + 5.0;
-  
-max_twotheta = 60;
-min_twotheta = 0;
+
   /*allocate memory for HKL arrays*/
   con_H = NULL;
   con_K = NULL;

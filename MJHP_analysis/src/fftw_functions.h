@@ -3,4 +3,6 @@
 
   void FFTon_RealGrid(BinaryGrid* BIN, NumberGrid* GRD, UnitCell* UC);
 
+  void FFTon_ReciprocalGrid(BinaryGrid* BIN, NumberGrid* GRD, UnitCell* UC, Symmetry* SYM, BinaryGrid* POT);
+
 #endif

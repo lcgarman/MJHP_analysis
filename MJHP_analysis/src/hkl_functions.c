@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <gsl/gsl_complex_math.h>
+#include <gsl/gsl_complex.h>
 #include "globals.h"
 #include "structures.h"
 #include "allocate_memory.h"
@@ -371,3 +373,32 @@ Conventional HKL_convert_toP(MottJonesConditions * MJC, int H, int K, int L)
   return(con);
 } //END of primitive_to_conventional 
 
+void combine_potential_grid(NumberGrid* GRD, BinaryGrid* LOCAL, BinaryGrid* NONLOC, BinaryGrid* POT) 
+{
+  int ngfftx, ngffty, ngfftz;
+  int h0, k0, l0;
+  double combined_pot;
+  
+  ngfftx = GRD->ngfftx;
+  ngffty = GRD->ngffty;
+  ngfftz = GRD->ngfftz;
+  POT->rec_grid = NULL;
+  POT->rec_grid = AllocateMemory_threeD_complex(POT->rec_grid, ngfftx, ngffty, ngfftz);
+  
+  printf("\nCombining Local and Nonlocal Potential Energy Grids in rec space.\n");
+  combined_pot = 0.0;
+  for (h0=0;h0<ngfftx;h0++) {
+    for (k0=0;k0<ngffty;k0++) {
+      for (l0=0;l0<ngfftz;l0++) {
+        POT->rec_grid[h0][k0][l0] = gsl_complex_add(LOCAL->rec_grid[h0][k0][l0], NONLOC->rec_grid[h0][k0][l0]);
+        combined_pot += GSL_REAL(LOCAL->rec_grid[h0][k0][l0]) + GSL_REAL(NONLOC->rec_grid[h0][k0][l0]);
+      }
+    }
+  }
+  printf("Total Combined Potential =  %lf\n", combined_pot);
+
+  /*free individual potential grids*/
+  LOCAL->rec_grid = FreeMemory_threeD_complex(LOCAL->rec_grid, ngfftx, ngffty);
+  NONLOC->rec_grid = FreeMemory_threeD_complex(NONLOC->rec_grid, ngfftx, ngffty);
+
+} /*END of combine potential grids*/
