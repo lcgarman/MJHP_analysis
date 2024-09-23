@@ -37,6 +37,8 @@
   double*** AllocateMemory_threeD_double(double ***array, int dim1, int dim2, int dim3);
 
   double**** AllocateMemory_fourD_double(double ****array, int dim1, int dim2, int dim3, int dim4);
+
+  gsl_complex***** AllocateMemory_fiveD_complex(gsl_complex *****array, int dim1, int dim2, int dim3, int dim4, int dim5);
  
   gsl_complex*** AllocateMemory_threeD_complex(gsl_complex ***array, int dim1, int dim2, int dim3);
 
@@ -58,6 +60,8 @@
   double**** FreeMemory_fourD_double(double ****array, int dim1, int dim2, int dim3);
 
   gsl_complex*** FreeMemory_threeD_complex(gsl_complex ***array, int dim1, int dim2);
+
+  gsl_complex***** FreeMemory_fiveD_complex(gsl_complex *****array, int dim1, int dim2, int dim3, int dim4);
 
   void AllocateMemory_Wavefunctions(Wavefunction* WFK); 
 

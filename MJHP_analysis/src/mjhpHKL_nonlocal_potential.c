@@ -459,7 +459,7 @@ void mjhpHKL_nonlocal_potential(VectorIndices *VECT, NumberGrid* GRD, EnergyStep
 
 }   //END of Calculate Nonlocal energy contribution function 
 
-void mjhpREAL_nonlocal_potential(VectorIndices *VECT, NumberGrid* GRD, Wavefunction* WFK, Pseudopotential* PSP, UnitCell* UC, AtomicVariables* ATM, BinaryGrid* NONLOC)
+void mjhpREAL_nonlocal_potential(VectorIndices *VECT, NumberGrid* GRD, Wavefunction* WFK, Pseudopotential* PSP, UnitCell* UC, AtomicVariables* ATM, NonlocalEnergyReal* NLER)
 { 
   int j;
   int nkpt, kptno;
@@ -579,9 +579,9 @@ void mjhpREAL_nonlocal_potential(VectorIndices *VECT, NumberGrid* GRD, Wavefunct
   p = NULL;
   Plm = NULL;
   /*Allocate memory for large variables in this function*/
-  NONLOC->rec_grid = NULL;
-  NONLOC->rec_grid = AllocateMemory_threeD_complex(NONLOC->rec_grid, ngfftx, ngffty, ngfftz);
-  //for (dE=0;dE<nEstep;dE++) ECON->nonlocal[dE] = 0.0;
+  NLER->rec_grid_latom = AllocateMemory_fiveD_complex(NLER->rec_grid_latom, ngfftx, ngffty, ngfftz, natom, 4);
+  NLER->l_max_type = AllocateMemory_oneD_int(l_max_type, ntypat);
+
   l_max_type = AllocateMemory_oneD_int(l_max_type, ntypat);
   i_max_type = AllocateMemory_twoD_int(i_max_type, ntypat, 5);
   ph = AllocateMemory_fourD_double(ph, 4, 4, 5, ntypat);
@@ -611,7 +611,7 @@ void mjhpREAL_nonlocal_potential(VectorIndices *VECT, NumberGrid* GRD, Wavefunct
   printf("\nCalculating Nonlocal Potential Energy \n");
   /*begin calculating nonlocal energy for HKL*/
   for (kptno=0;kptno<nkpt;kptno++){ 
-    printf( "kpt %d \t%lf %lf %lf\n", kptno, WFK->kpt[0][kptno], WFK->kpt[1][kptno], WFK->kpt[2][kptno]);
+    //printf( "kpt %d \t%lf %lf %lf\n", kptno, WFK->kpt[0][kptno], WFK->kpt[1][kptno], WFK->kpt[2][kptno]);
 	npw = WFK->npw[kptno];
 
 	/*Find |G+k| needed to calculate kinetic Energy*/
@@ -648,6 +648,7 @@ void mjhpREAL_nonlocal_potential(VectorIndices *VECT, NumberGrid* GRD, Wavefunct
 			if (p[pw][l][i][atom_type]!=0.0) {
 			  l_max_type[atom_type]=l+1;
 			  i_max_type[atom_type][l]=i+1;
+NLER->l_max_type[atom_type] = l_max_type[atom_type];
 			}
 		  }
 		}
@@ -715,9 +716,9 @@ void mjhpREAL_nonlocal_potential(VectorIndices *VECT, NumberGrid* GRD, Wavefunct
         }
         /*if no match is found then go to next pw2*/
         if (hkl_match == 0) continue;
-        printf( "\t H K L = %d %d %d\n", H_match, K_match, L_match);
-        printf( "\t\t pw1 = %lf %lf %lf |pw1|=%lf\n", pw1_x, pw1_y, pw1_z, mag_pw1);
-        printf( "\t\t pw2 = %lf %lf %lf |pw2|=%lf\n", pw2_x, pw2_y, pw2_z, mag_pw2);
+        //printf( "\t H K L = %d %d %d\n", H_match, K_match, L_match);
+        //printf( "\t\t pw1 = %lf %lf %lf |pw1|=%lf\n", pw1_x, pw1_y, pw1_z, mag_pw1);
+        //printf( "\t\t pw2 = %lf %lf %lf |pw2|=%lf\n", pw2_x, pw2_y, pw2_z, mag_pw2);
         /*make delta_h positive*/
 		if (delta_h < 0) delta_h+=ngfftx;
 		if (delta_k < 0) delta_k+=ngffty;
@@ -727,7 +728,7 @@ void mjhpREAL_nonlocal_potential(VectorIndices *VECT, NumberGrid* GRD, Wavefunct
         mag_diff = mag_pw1 - mag_pw2;
         exponent = -(mag_diff*mag_diff)/sigma;
         broad = exp(exponent);
-        printf( "\t\tbroadening = %lf\n", broad);
+        //printf( "\t\tbroadening = %lf\n", broad);
 
 		/*Finding delta(reduced plane wave coords in cart*/
 		Dga=ga[pw1]-ga[pw2];
@@ -871,14 +872,15 @@ void mjhpREAL_nonlocal_potential(VectorIndices *VECT, NumberGrid* GRD, Wavefunct
 			for (l=0;l<l_max_type[atom_type];l++) {
 	          total_nonlocal += 1.0*c1c2atomphases_real*vg1g2_real_l[atom_type][l];
               potentialE = gsl_complex_rect(c1c2atomphases_real*vg1g2_real_l[atom_type][l], 0.0);
-	          NONLOC->rec_grid[delta_h][delta_k][delta_l] = gsl_complex_add(NONLOC->rec_grid[delta_h][delta_k][delta_l], potentialE); 
+			  /*store nonlocal E contributions for each atom and l; instead of combing all contributions*/
+	          NLER->rec_grid_latom[delta_h][delta_k][delta_l][atomno][l] = gsl_complex_add(NLER->rec_grid_latom[delta_h][delta_k][delta_l][atomno][l], potentialE); 
 			} //end l->l_max_type loop
 		  } //end band->nband loop
 		} //end of atom loop
 
 	  } //end pw2 loop
 	} //end pw1 loop
-	printf( "   kpt %d\t nonlocal potential energy = %lf\n", kptno, total_nonlocal);
+	//printf( "   kpt %d\t nonlocal potential energy = %lf\n", kptno, total_nonlocal);
   } //end of kpt loop
   printf("\tTotal Nonlocal Energy = %lf\n", total_nonlocal);
   printf( "Total Nonlocal Energy = %lf\n", total_nonlocal);

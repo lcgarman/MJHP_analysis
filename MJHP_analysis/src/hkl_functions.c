@@ -289,6 +289,36 @@ void integrate_HKL_potential(EnergyContribution * ECON, EnergyStep * ESTP, Atomi
 
 }
 
+void integrate_Erange_potential(EnergyContribution * ECON, EnergyStep * ESTP, VectorIndices * VECT)
+{
+  int nEstep;
+  int dE;
+  double eval;
+  double Eint_Ha;
+  double Eint_eV;
+  double Elow;
+  double scanE_start;  
+  double scanE_stop;
+  
+  nEstep = ESTP->nEstep;
+  ESTP->nEstep = nEstep;
+  Elow = ESTP->bandE_min*EMESH;
+  scanE_start = VECT->scanE_start;
+  scanE_stop = VECT->scanE_stop;
+
+  printf("\nIntegrating MJHP from %lf to %lf\n", scanE_start, scanE_stop);
+  
+  Eint_Ha = 0.0;
+  for (dE=0;dE<nEstep;dE++) {
+    eval = ((double)dE+Elow)/EMESH;
+    if ((eval>scanE_stop)||(eval<scanE_start)) continue;
+    Eint_Ha += ECON->local[dE];
+  }
+  Eint_eV = (Eint_Ha*HATOEV);
+  printf("\t iMJHP = %lf eV\n", Eint_eV);
+
+} //END of integrate E range
+
 
 Conventional HKL_convert_toP(MottJonesConditions * MJC, int H, int K, int L)
 {

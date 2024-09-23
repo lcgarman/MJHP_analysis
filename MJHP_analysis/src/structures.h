@@ -190,4 +190,9 @@ typedef struct {
   char *replace;
 } Modification;
 
+typedef struct {
+  int* l_max_type;
+  gsl_complex***** rec_grid_latom;
+} NonlocalEnergyReal;
+
 #endif

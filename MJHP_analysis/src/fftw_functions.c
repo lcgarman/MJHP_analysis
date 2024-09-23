@@ -147,7 +147,7 @@ void FFTon_ReciprocalGrid(BinaryGrid* BIN, NumberGrid* GRD, UnitCell* UC, Symmet
     }
   }
   F000 = GSL_REAL(POT->rec_grid[0][0][0]);
-  printf("Total Potential Energy Before FFT: %lf (F000 = %lf)\n", coeff_total, F000);
+//  printf("Total Potential Energy Before FFT: %lf (F000 = %lf)\n", coeff_total, F000);
 
   /*Execute the fft*/
   fftw_execute(grid_plan);
@@ -166,7 +166,7 @@ void FFTon_ReciprocalGrid(BinaryGrid* BIN, NumberGrid* GRD, UnitCell* UC, Symmet
     }
   }
   f000 = real_grid[0][0][0]*ngfft_size;
-  printf("Total Potential Energy After FFT: %lf (f000 = %lf)\n", coeff_total, f000);
+//  printf("Total Potential Energy After FFT: %lf (f000 = %lf)\n", coeff_total, f000);
 
   fftw_destroy_plan(grid_plan);
   fftw_free(grid_in);
@@ -237,7 +237,7 @@ void FFTon_ReciprocalGrid(BinaryGrid* BIN, NumberGrid* GRD, UnitCell* UC, Symmet
     }
   }
   f000 = BIN->real_grid[0][0][0]*ngfft_size;
-  printf("Total Symmetrized Potential Energy =  %lf (f000=%lf)\n", coeff_total, f000);
+  printf("Total Symmetrized Potential Energy =  %lf\n", f000);
 
   /*rewrap grid so jxyz[max] = jxyz[0]*/
   for(jx=0;jx<NGX;jx++) {

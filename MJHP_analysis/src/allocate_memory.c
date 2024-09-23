@@ -543,6 +543,103 @@ double**** AllocateMemory_fourD_double(double ****array, int dim1, int dim2, int
   return array;
 } 
 
+gsl_complex***** AllocateMemory_fiveD_complex(gsl_complex***** array, int dim1, int dim2, int dim3, int dim4, int dim5)
+{
+  int i, j, k, l, m;
+
+  /*if array is already allocated leave this function*/
+  if (array != NULL) {
+    return array;
+  }
+
+  /*allocate first dimension of 3D array to pointer*/
+  array = malloc(dim1 * sizeof(gsl_complex****));
+  /*check if allocation was successful*/
+  if (array == NULL) {
+    printf("ERROR: Memory Allocation Failed\n");
+    exit(0);
+  }
+
+  /*allocate second dimension*/ 
+  for (i=0;i<dim1;i++) {
+    array[i] = malloc(dim2 * sizeof(gsl_complex***));
+    /*check allocation*/
+    if (array[i] == NULL) {
+      printf("ERROR: Memory Allocation Failed\n");
+      /*free previously allocated memory*/
+      for (j=0;j<i;j++) {
+        free(array[j]);
+      }
+      free(array);
+      exit(0);
+    }
+
+    /*allocate third dimension*/
+    for (j=0;j<dim2;j++) {
+      array[i][j] = malloc(dim3 * sizeof(gsl_complex**));
+      /*check allocation*/
+      if (array[i][j] == NULL) {
+        printf("ERROR: Memory Allocation Failed\n");
+        for (k=0;k<j;k++) {
+          free(array[i][k]);
+        }
+        free(array[i]);
+        free(array);
+		exit(0);
+      }
+
+      /*allocate fourth dimension*/
+      for (k=0;k<dim3;k++) {
+        array[i][j][k] = malloc(dim4 * sizeof(gsl_complex*));
+        /*check allocation*/
+        if (array[i][j][k] == NULL) {
+          printf("ERROR: Memory Allocation Failed\n");
+          for (l=0;l<k;l++) {
+            free(array[i][j][l]);
+          }
+          free(array[i][j]);
+          free(array[i]);
+          free(array);
+          exit(0);
+        }
+  
+        /*allocate fifth dimension*/
+        for (l=0;l<dim4;l++) {
+          array[i][j][k][l] = malloc(dim5 * sizeof(gsl_complex));
+          /*check allocation*/
+          if (array[i][j][k][l] == NULL) {
+            for (m=0;m<l;m++) {
+              free(array[i][j][k][m]);
+            }
+            free(array[i][j][k]);
+            free(array[i][j]);
+            free(array[i]);
+            free(array);
+            exit(0);
+          }
+        }
+	  }
+    }
+  }
+
+  /*zero out memory*/
+  for (i=0;i<dim1;i++) {
+    for (j=0;j<dim2;j++) {
+      for (k=0;k<dim3;k++) {
+        for (l=0;l<dim4;l++) {
+          for (m=0;m<dim5;m++) {
+     	    GSL_REAL(array[i][j][k][l][m]) = 0.0;
+     	    GSL_IMAG(array[i][j][k][l][m]) = 0.0;
+          }
+        }
+      }
+    }
+  }
+
+  /*return the array at end of function*/
+  return array;
+}
+
 gsl_complex*** AllocateMemory_threeD_complex(gsl_complex ***array, int dim1, int dim2, int dim3)
 {
   int i, j, k;
@@ -602,7 +699,6 @@ gsl_complex*** AllocateMemory_threeD_complex(gsl_complex ***array, int dim1, int
   /*return the array at end of function*/
   return array;
 } 
-
 
 
 int* FreeMemory_oneD_int(int *array)
@@ -763,6 +859,32 @@ gsl_complex*** FreeMemory_threeD_complex(gsl_complex ***array, int dim1, int dim
     for (j=0;j<dim2;j++) {
       free(array[i][j]);
     }
+    free(array[i]);
+  }
+  free(array);
+  array = NULL;
+  return array;
+}
+
+gsl_complex***** FreeMemory_fiveD_complex(gsl_complex *****array, int dim1, int dim2, int dim3, int dim4)
+{
+  int i, j, k, l;
+
+  /*if array is NULL leave this function*/
+  if (array == NULL) {
+    return array;
+  }
+  
+  for (i=0;i<dim1;i++) {
+    for (j=0;j<dim2;j++) {
+      for (k=0;k<dim3;k++) {
+        for (l=0;l<dim4;l++) {
+          free(array[i][j][k][l]);
+		} 
+	    free(array[i][j][k]);
+	  }
+	  free(array[i][j]);
+	}
     free(array[i]);
   }
   free(array);

@@ -138,6 +138,7 @@ int main(int argc, char * argv[])
 	/*find the shell in reciprocal space to include potential energy contributions*/
 	find_MJregion(&vect, &ucell);
 	
+    //wave.fermi = 0.07601;
 	/*calculate the local potential energy contribution*/
 	mjhpHKL_local_potential(&vect, &grid, &estp, &wave, &ucell, &bin, &econ);
 	

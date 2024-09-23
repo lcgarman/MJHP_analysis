@@ -299,7 +299,6 @@ void print_XSF(char filename[200], UnitCell* UC, NumberGrid* GRD, BinaryGrid* BI
   Ycart = NULL;
   Zcart = NULL;
 
-  printf("Printing MJHP Density to: %s\n", filename);
   fxsf=fopen(filename, "w");
   if (fxsf==NULL) {
     printf("ERROR: %s not found\n", filename);
@@ -311,14 +310,22 @@ void print_XSF(char filename[200], UnitCell* UC, NumberGrid* GRD, BinaryGrid* BI
   Ycart = AllocateMemory_oneD_double(Ycart, natom);
   Zcart = AllocateMemory_oneD_double(Zcart, natom);
 
-  /*Calculate cartesian XYZ of atoms*/
-  for (j=0;j<natom;j++) {
-	x = ATM->xred[0][j];
-	y = ATM->xred[1][j];
-	z = ATM->xred[2][j];
-	Xcart[j] = x*UC->ang_ax+y*UC->ang_bx+z*UC->ang_cx; 
-	Ycart[j] = x*UC->ang_ay+y*UC->ang_by+z*UC->ang_cy; 
-	Zcart[j] = x*UC->ang_az+y*UC->ang_bz+z*UC->ang_cz; 
+  if (ATM->xred == NULL) {
+    for (j=0;j<natom;j++) {
+      Xcart[j] = ATM->Xcart[j];
+      Ycart[j] = ATM->Ycart[j];
+      Zcart[j] = ATM->Zcart[j];
+    }
+  } else {
+    /*Calculate cartesian XYZ of atoms*/
+	for (j=0;j<natom;j++) {
+	  x = ATM->xred[0][j];
+	  y = ATM->xred[1][j];
+	  z = ATM->xred[2][j];
+	  Xcart[j] = x*UC->ang_ax+y*UC->ang_bx+z*UC->ang_cx; 
+	  Ycart[j] = x*UC->ang_ay+y*UC->ang_by+z*UC->ang_cy; 
+	  Zcart[j] = x*UC->ang_az+y*UC->ang_bz+z*UC->ang_cz; 
+	}
   }
 
   fprintf(fxsf, " DIM-GROUP\n"); 
