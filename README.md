@@ -91,6 +91,7 @@ The  minY and maxY values correspond to the min and max energy range you want to
 
 This completes the MJHP_analysis. 
 
+## Example .mjin File
 Below is a sample mjin file for Cu5Zn8:
 ```
 Cu5Zn8
