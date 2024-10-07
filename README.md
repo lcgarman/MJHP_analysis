@@ -29,7 +29,7 @@ The MJHP_analysis requires outputs from abinit version 7.10.5. This method requi
 Into the 2theta directory copy over the abinit FILENAME.in, FILENAME.files (containing the paths to the pseudopotentials), and FILENAME_i_DEN (the output density from the single-point energy FILENAME_o_DEN will be used as the starting density FILENAME_i_DEN for the non-self consistent calculation to follow). 
 Into the HKL directory copy the FILENAME.out, FILENAME_o_POT, and FILENAME_o_WFK files from the single-point energy calculation. 
 One additional input file is required in both of these directories: FILENAME.mjin. Start by making this file in the 2theta directory with the following format:
-
+```
 IN_FILENAME
 
 OUT_COMPOUND
@@ -37,7 +37,7 @@ OUT_COMPOUND
 vec #
 
 xY
-
+```
 The first line, IN_FILENAME, should give the file string corresponding to your abinit output files. The OUT_COMPOUND is what you would like the starting file string to be of the output files from the MJHP_analysis programs. The third line expects a string followed by a number (double or integer) that corresponds to the number of valence electrons in the unit cell of the compound. The fourth line, xY, should be two letters where the first (x) corresponding to the crystal family and the second to the centering type (Y). This line is case sensitive, so x should be lowercase and Y uppercase, identical to the letters of a Pearson symbol. 
 Once the FILENAME.mjin file and the necessary abinit files are within the 2theta directory run the executable:
 ```
@@ -47,14 +47,14 @@ This will find the high symmetry k-points of interest and copy them into your ab
 ```
 mjhp2theta_analyze.
 ```
-This will generate one OUT_FILENAME.mjout file that can be plotted using matlab program:
+This will generate one OUT_FILENAME.mjout file that can be plotted using the matlab program:
 ```
 plot_MJHP_2theta(OUT_COMPOUND_2theta.mjout)
 ```
 This completes the first MJHP analysis. 
 
 Now, navigate to the HKL directory, and copy over the FILENAME.mjin file from the 2theta directory. This file now requires a few additional lines as follows:
-
+```
 IN_FILENAME
 
 OUT_COMPOUND
@@ -72,19 +72,19 @@ h1 k1 l1
 h2 k2 l2
 
 hn kn ln
-
+```
 The first four lines should not change from the 2theta to HKL calculations. The fifth line, should be a string, followed by an integer of how many datasets you want to run. The sixth line should be a string “HKL”. Following this line should be a list of the conventional HKL indices you are interested in analyzing. The number of lines following HKL should correspond to the integer following the no_HKL on the fifth line. Following this set up, run the executable:
 ```
 mjhpHKL_analyze
 ```
-This will generate OUT_COMPOUND_h1k1l1.mjout (HKL corresponding to the conventional indices of the reflections of interest) files for each dataset will be generate. The results from this analysis may be plotted using 
+This will generate OUT_COMPOUND_h1k1l1.mjout (HKL corresponding to the conventional indices of the reflections of interest) files for each dataset will be generate. The results from this analysis may be plotted using the matlab program:
 ```
 plot_MJHP_HKL(OUT_COMPOUND_h1k1l1.mjout, minY, maxY, directory)
 ```
-The  minY and maxY correspond to the min and max energy range you want to view, and directory can either be a path to where to save the figure files (.tif and .fig), or 0 to not save the figure files. 
+The  minY and maxY values correspond to the min and max energy range you want to view, and directory can either be a path to where to save the figure files (.tif and .fig), or 0 to not automatically save the figure files. 
 
 This completes the MJHP_analysis. Below is a sample mjin file for Cu5Zn8:
-
+```
 Cu5Zn8
 
 Cu5Zn8_gammabrass
@@ -99,10 +99,10 @@ HKL
 
 3 3 0
 
-
 4 1 1 
 
 -4 1 1
+```
 
 ## Citation 
 If you use the MJHP_analysis in your research, please cite the following paper:
