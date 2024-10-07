@@ -28,7 +28,7 @@ I recommend working in two separate directories for the MJHP_analysis, let’s c
   
   HKL
 
-Copy from the single-point energy calculation into the 2theta directory: the abinit FILENAME.in, FILENAME.files, and FILENAME_i_DEN (the output density from to be used as the starting ground state density).
+Copy from the single-point energy calculation into the 2theta directory: the abinit FILENAME.in, FILENAME.files, and FILENAME_i_DEN (the output density to be used as the starting ground state density).
 
 Copy from the single-point energy calculation into the HKL directory: the abinit FILENAME.out, FILENAME_o_POT, and FILENAME_o_WFK files.
 
@@ -59,7 +59,7 @@ plot_MJHP_2theta('OUT_COMPOUND_2theta.mjout')
 This completes the first MJHP analysis. 
 
 
-Now, navigate to the HKL directory, and copy over the FILENAME.mjin file from the 2theta directory. This file now requires a few additional lines as follows:
+Now, navigate to the HKL directory, and copy over the FILENAME.mjin file from the 2theta directory. This file now requires a few additional lines:
 ```
 IN_FILENAME
 
@@ -69,7 +69,7 @@ vec #
 
 xY
 
-no_HKL #
+no_HKL n
 
 HKL
 
@@ -79,7 +79,7 @@ h2 k2 l2
 
 hn kn ln
 ```
-The first four lines should not change from the 2theta to HKL calculations. The fifth line, should be a string, followed by an integer of how many datasets you want to run. The sixth line should be a string “HKL”. Following this line should be a list of the conventional HKL indices you are interested in analyzing. The number of lines following HKL on the sixth line should correspond to the integer following the no_HKL on the fifth line. Following this set up, run the executable:
+The first four lines should not change from the 2theta to HKL calculations. The fifth line, should be a string, followed by an integer of how many datasets you want to run. The sixth line should be a string “HKL”. Following this line should be a list of the conventional HKL indices you are interested in analyzing. The number of lines following HKL on the sixth line should correspond to the integer (n) following the "no_HKL" on the fifth line. Following this set up, run the executable:
 ```
 mjhpHKL_analyze FILENAME.mjin >& FILENAME_mjhpHKL.log
 ```
