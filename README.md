@@ -42,13 +42,13 @@ vec #
 
 xY
 ```
-The first line, IN_FILENAME, should be the file string corresponding to your abinit output files. The OUT_COMPOUND is what you would like the the output files from the MJHP_analysis program to be called. The third line expects a string followed by a number (double or integer) that corresponds to the number of valence electrons in the unit cell of your compound. The fourth line, xY, should be two letters where the first (x) corresponds to the crystal family and the second to the centering type (Y). This line is case sensitive, so x should be lowercase and Y uppercase, identical to the letters of a Pearson symbol. 
+The first line, IN_FILENAME, should be the file string corresponding to your abinit output files. The OUT_COMPOUND is what you would like the the output files from the MJHP_analysis program to be called. The third line expects a string followed by a number (double or integer) that corresponds to the number of valence electrons in the primitive unit cell of your compound. The fourth line, xY, should be two letters where the first (x) corresponds to the crystal family and the second to the centering type (Y). This line is case sensitive, so x should be lowercase and Y uppercase, identical to the letters of a Pearson symbol. 
 
 Once the FILENAME.mjin file and the necessary abinit files are within the 2theta directory run the executable:
 ```
 prepare_mjhp2theta FILENAME.mjin
 ```
-This will find the high symmetry k-points of interest and copy them into your abinit FILENAME.in file, as well as set up an OUT_COMPOUND.rflc file necessary for the MJHP_analysis to follow. Run the non-self consistent abinit calculation with this modified FILENAME.in file. Following the completion of this job, in the same directory run the following executable to perform the first MJHP_analysis:
+This will find the high symmetry k-points of interest and copy them into your abinit FILENAME.in file, as well as set up an OUT_COMPOUND.rflc file necessary for the MJHP_analysis to follow. Run the non-self consistent abinit calculation with this modified FILENAME.in file. Following the completion of this job, in the same directory, run the following executable to perform the first MJHP_analysis:
 ```
 mjhp2theta_analyze  FILENAME.mjin >& FILENAME_mjhp2theta.log
 ```
@@ -83,11 +83,11 @@ The first four lines should not change from the 2theta to HKL calculations. The 
 ```
 mjhpHKL_analyze FILENAME.mjin >& FILENAME_mjhpHKL.log
 ```
-Again, the ">& FILENAME_mjhpHKL.log" is optional and will print the command line output to the log file. This executable will generate one OUT_COMPOUND_h1k1l1.mjout (h1k1l1 corresponding to the conventional indices for the reciprocal lattice vectors of interest) file for each dataset. The results from this analysis may be plotted using the matlab program:
+Again, the ">& FILENAME_mjhpHKL.log" is optional and will print the command line output to the log file. This executable will generate one OUT_COMPOUND_hnknln.mjout file for each dataset. The results from this analysis may be plotted using the matlab program:
 ```
 plot_MJHP_HKL('OUT_COMPOUND_h1k1l1.mjout', minY, maxY)
 ```
-The  minY and maxY values correspond to the min and max energy range you want to view. 
+The  minY and maxY values correspond to the min and max energy range in eV you wish to view. 
 
 This completes the MJHP_analysis. 
 
