@@ -35,12 +35,10 @@ Copy from the single-point energy calculation into the HKL directory: the abinit
 One additional input file is required in both of these directories: FILENAME.mjin. Start by making this file in the 2theta directory with the following format:
 ```
 IN_FILENAME
-
 OUT_COMPOUND
-
 vec #
-
 xY
+
 ```
 The first line, IN_FILENAME, should be the file string corresponding to your abinit output files. The OUT_COMPOUND is what you would like the the output files from the MJHP_analysis program to be called. The third line expects a string followed by a number (double or integer) that corresponds to the number of valence electrons in the primitive unit cell of your compound. The fourth line, xY, should be two letters where the first (x) corresponds to the crystal family and the second to the centering type (Y). This line is case sensitive, so x should be lowercase and Y uppercase, identical to the letters of a Pearson symbol. 
 
@@ -52,7 +50,7 @@ This will find the high symmetry k-points of interest and copy them into your ab
 ```
 mjhp2theta_analyze  FILENAME.mjin >& FILENAME_mjhp2theta.log
 ```
-The ">& FILENAME_mjhpHKL.log" is optional and will print the command line output to that log file. This executable will generate the OUT_FILENAME_2theta.mjout file that can be plotted using the matlab program:
+The ">& FILENAME_mjhp2theta.log" is optional and will print the command line output to that log file. This executable will generate the OUT_FILENAME_2theta.mjout file that can be plotted using the matlab program:
 ```
 plot_MJHP_2theta('OUT_COMPOUND_2theta.mjout')
 ```
@@ -62,22 +60,15 @@ This completes the first MJHP analysis.
 Now, navigate to the HKL directory, and copy over the FILENAME.mjin file from the 2theta directory. This file now requires a few additional lines:
 ```
 IN_FILENAME
-
 OUT_COMPOUND
-
 vec #
-
 xY
-
 no_HKL n
-
 HKL
-
 h1 k1 l1
-
 h2 k2 l2
-
 hn kn ln
+
 ```
 The first four lines should not change from the 2theta to HKL calculations. The fifth line, should be a string, followed by an integer of how many datasets you want to run. The sixth line should be a string “HKL”. Following this line should be a list of the conventional HKL indices you are interested in analyzing. The number of lines following HKL on the sixth line should correspond to the integer (n) following the "no_HKL" on the fifth line. Following this set up, run the executable:
 ```
