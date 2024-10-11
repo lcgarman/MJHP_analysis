@@ -2,7 +2,7 @@
 The Mott-Jones Hamilton Population analysis. A program for analyzing the Mott-Jones effect in intermetallic compounds.
 
 ## Installation
-Provided you have an SSH key to clone the repo, run these commands:
+Provided you have an SSH key to clone the repository, run these commands:
 ```
 git clone git@github.com:lcgarman/MJHP_analysis.git
 cd MJHP_analysis/src
@@ -16,7 +16,7 @@ This will clone the repo into your current directory, change to the necessary di
 
 ### Compilation
 
-The GNU Scientific Libary, libxc, and fftw3 are required for compiling the MJHP_analysis.
+The GNU Scientific Library, libxc, and fftw3 are required for compiling the MJHP_analysis.
 
 ### Running Calculation
 
@@ -38,9 +38,8 @@ IN_FILENAME
 OUT_COMPOUND
 vec #
 xY
-
 ```
-The first line, IN_FILENAME, should be the file string corresponding to your abinit output files. The OUT_COMPOUND is what you would like the the output files from the MJHP_analysis program to be called. The third line expects a string followed by a number (double or integer) that corresponds to the number of valence electrons in the primitive unit cell of your compound. The fourth line, xY, should be two letters where the first (x) corresponds to the crystal family and the second to the centering type (Y). This line is case sensitive, so x should be lowercase and Y uppercase, identical to the letters of a Pearson symbol. 
+The first line, IN_FILENAME, should be the file string corresponding to your abinit output files. The OUT_COMPOUND is what you would like the output files from the MJHP_analysis program to be called. The third line expects a string followed by a number (double or integer) that corresponds to the number of valence electrons in the primitive unit cell of your compound. The fourth line, xY, should be two letters where the first (x) corresponds to the crystal family and the second to the centering type (Y). This line is case sensitive, so x should be lowercase and Y uppercase, identical to the letters of a Pearson symbol. 
 
 Once the FILENAME.mjin file and the necessary abinit files are within the 2theta directory run the executable:
 ```
@@ -68,7 +67,6 @@ HKL
 h1 k1 l1
 h2 k2 l2
 hn kn ln
-
 ```
 The first four lines should not change from the 2theta to HKL calculations. The fifth line, should be a string, followed by an integer of how many datasets you want to run. The sixth line should be a string “HKL”. Following this line should be a list of the conventional HKL indices you are interested in analyzing. The number of lines following HKL on the sixth line should correspond to the integer (n) following the "no_HKL" on the fifth line. Following this set up, run the executable:
 ```
