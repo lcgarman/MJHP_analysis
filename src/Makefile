@@ -25,13 +25,13 @@ TARGET_PREP = prepare_mjhp2theta
 
 all: $(TARGET_2THETA) $(TARGET_HKL) $(TARGET_PREP)
 
-# Linking rule to create the executable
+# Linking rule to create the mjhp2theta_analyze 
 $(TARGET_2THETA): $(OBJS_2THETA)
 	$(CC) $(CFLAGS) $(OBJS_2THETA) $(LDFLAGS) $(LIBS) -o $(TARGET_2THETA)
-# Linking rule to create the executable
+# Linking rule to create the mjhpHKL_analyze 
 $(TARGET_HKL): $(OBJS_HKL)
 	$(CC) $(CFLAGS) $(OBJS_HKL) $(LDFLAGS) $(LIBS) -o $(TARGET_HKL)
-# Linking rule to create the executable
+# Linking rule to create the prepare_mjhp2theta 
 $(TARGET_PREP): $(OBJS_PREP)
 	$(CC) $(CFLAGS) $(OBJS_PREP) $(LDFLAGS) $(LIBS) -o $(TARGET_PREP)
 
