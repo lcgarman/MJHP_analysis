@@ -1,8 +1,8 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -g -I/share/apps/dfprograms/fftw3/include
-LDFLAGS = -L/share/apps/dfprograms/fftw3/lib 
-LIBS = -lgsl -lm -lfftw3 -mcmodel=medium 
+CFLAGS = -Wall -Wextra -g -I/share/apps/dfprograms/fftw3/include -I/home/lcgarman/gsl/include 
+LDFLAGS = -Wl,-rpath,/home/lcgarman/gsl/lib -L/share/apps/dfprograms/fftw3/lib -L/home/lcgarman/gsl/lib
+LIBS = -lgsl -lgslcblas -lm -lfftw3 -mcmodel=medium 
 
 # Source files
 SRCS = mjhp2theta_main.c globals.c structures.c allocate_memory.c cell_parameters.c rwa_functions.c read_binary_abinit.c fftw_functions.c twotheta_functions.c energy_functions.c mjhp2theta_local_potential.c psp_functions.c mjhp2theta_nonlocal_potential.c hkl_functions.c
